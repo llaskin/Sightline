@@ -24,18 +24,19 @@ reset and reseeded per run).
 
 Run on 2026-09-07. Every command exited 0.
 
-Final run on commit `abf0278` with a clean working tree (0 modified files).
+Final run on commit `3d3002a` with a clean working tree (0 modified files) and
+the cached browser sessions deleted first, so sign-in ran for real.
 
 | Command | Started | Finished | Result |
 |---|---|---|---|
-| `npm run lint` | 16:12:15 | 16:12:18 | exit 0, no errors, no warnings |
-| `npm run typecheck` | 16:12:18 | 16:12:19 | exit 0 |
-| `npm run test:unit` | 16:12:19 | 16:12:20 | **219 passed / 219** |
-| `npm run test:integration` | 16:12:20 | 16:12:52 | **124 passed / 124** |
-| `npm run build` | 16:12:52 | 16:12:57 | exit 0, 38 routes |
-| `npm run test:e2e` | 16:12:57 | 16:13:26 | **48 passed / 48** |
+| `npm run lint` | 16:42:09 | 16:42:13 | exit 0, no errors, no warnings |
+| `npm run typecheck` | 16:42:13 | 16:42:14 | exit 0 |
+| `npm run test:unit` | 16:42:14 | 16:42:15 | **225 passed / 225** |
+| `npm run test:integration` | 16:42:15 | 16:42:47 | **124 passed / 124** |
+| `npm run build` | 16:42:47 | 16:42:52 | exit 0, 38 routes |
+| `npm run test:e2e` | 16:42:52 | 16:43:22 | **48 passed / 48** |
 
-**391 tests total.** Unit tests run with no database, no network and no model
+**397 tests total.** Unit tests run with no database, no network and no model
 key present. Integration tests run against real PostgreSQL. Browser tests run
 against the production build with a real database.
 
