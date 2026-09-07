@@ -126,10 +126,11 @@ export function buildDashboardViewModel(input: {
   result: AnalysisResult;
   response: { revision: number; generatedText: string; editedText: string | null } | null;
   clientName: string;
+  clientId?: string;
   reportLabel: string;
   now: Date;
 }) {
-  const { report, complaint, result, response, clientName, reportLabel, now } = input;
+  const { report, complaint, result, response, clientName, clientId, reportLabel, now } = input;
   const { metadata } = report;
 
   const traffic = findingBy(result, 'traffic.change');
@@ -420,6 +421,7 @@ export function buildDashboardViewModel(input: {
 
   return {
     clientName,
+    clientId: clientId ?? null,
     reportLabel,
     periodLabel,
     baselineLabel,
