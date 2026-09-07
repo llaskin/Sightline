@@ -290,6 +290,25 @@ loosening.
     analyst test tripped the auth rate limit, and the failure surfaced 30 seconds
     later as a navigation timeout that read like an application bug. Each account
     now caches its own cookies, which is what the owner path already did.
+18. **The test helpers hardcoded the origin they claimed to send from.** Four
+    places used `http://localhost:3100` while the same-origin guard compares
+    against `APP_ORIGIN`. They agreed only on the machine they were written on.
+    CI sets `APP_ORIGIN` to `http://127.0.0.1:3110`, so the guard correctly
+    rejected every mutating request and the first CI run failed with 403 where
+    201 was expected. The application was right; the tests were wrong. Now one
+    `tests/helpers/origin.ts` reads `APP_ORIGIN` and throws when it is unset --
+    `tests/helpers/auth.ts` previously had exactly the silent fallback that let
+    the two drift apart.
+19. **The browser suite had no database in CI.** `playwright.config.ts` passed
+    `E2E_DATABASE_URL` to the server it starts, defaulting to an empty string;
+    the workflow never set it. The server then failed every request with
+    "DATABASE_URL is not configured" and the run died three minutes later as a
+    webServer timeout whose message named nothing useful. The workflow now
+    creates `sightline_e2e` and points at it, and the config requires the
+    variable rather than defaulting it.
+
+    All three of the defects CI found are the same shape: a default that let
+    the configuration and the tests disagree without anything failing.
 16. **`returnTo` was built but never read.** `/analyses/new` sends the reader to
     the import wizard with a `returnTo` parameter; `/reports/new` ignored it, so
     committing landed on the report page and the reader had to navigate back and
@@ -365,8 +384,12 @@ code (AC-20).
   `feat/<slug>` branch. This repository was initialised empty for this release,
   so there was no branch to merge back into and no parallel session to isolate
   from, but the convention was not followed and nothing has been pushed.
-- **The CI workflow has not run.** `.github/workflows/ci.yml` is committed but
-  no push has occurred, so it is unexecuted.
+- **CI now runs and is green**, which it was not when this document was first
+  written. Run `34165800016` on `llaskin/Sightline` passed every step -- lint,
+  typecheck, 225 unit, 124 integration, build, and 52 browser tests -- in 3m48s
+  on Ubuntu with PostgreSQL 16. The first two runs failed; see defects 18 and
+  19, both of which were real and neither of which any local run could have
+  found.
 - **`npm audit` reports 4 moderate advisories**, all via
   `drizzle-kit -> @esbuild-kit/esm-loader -> esbuild`. This is a migration CLI
   dependency, absent from the application runtime and the production image.
