@@ -55,3 +55,6 @@ next-env.d.ts
 
 # Playwright saved sessions
 tests/e2e/.auth/
+
+# Regenerable knowledge graph (graphify update .)
+graphify-out/
