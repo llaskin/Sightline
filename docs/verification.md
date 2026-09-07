@@ -24,19 +24,22 @@ reset and reseeded per run).
 
 Run on 2026-09-07. Every command exited 0.
 
-Final run on commit `3d3002a` with a clean working tree (0 modified files) and
-the cached browser sessions deleted first, so sign-in ran for real.
+Final run on commit `3c5354e` with a clean working tree (0 modified files) and
+the cached browser sessions deleted first, so sign-in ran for real. Every
+commit hash in this document postdates the history rewrite that removed the
+design reference screenshot before publication; hashes recorded before that
+rewrite no longer exist.
 
 | Command | Started | Finished | Result |
 |---|---|---|---|
-| `npm run lint` | 16:42:09 | 16:42:13 | exit 0, no errors, no warnings |
-| `npm run typecheck` | 16:42:13 | 16:42:14 | exit 0 |
-| `npm run test:unit` | 16:42:14 | 16:42:15 | **225 passed / 225** |
-| `npm run test:integration` | 16:42:15 | 16:42:47 | **124 passed / 124** |
-| `npm run build` | 16:42:47 | 16:42:52 | exit 0, 38 routes |
-| `npm run test:e2e` | 16:42:52 | 16:43:22 | **48 passed / 48** |
+| `npm run lint` | 17:51:21 | 17:51:22 | exit 0, no errors, no warnings |
+| `npm run typecheck` | 17:51:22 | 17:51:23 | exit 0 |
+| `npm run test:unit` | 17:51:23 | 17:51:24 | **225 passed / 225** |
+| `npm run test:integration` | 17:51:24 | 17:51:56 | **124 passed / 124** |
+| `npm run build` | 17:51:56 | 17:52:01 | exit 0, 41 routes |
+| `npm run test:e2e` | 17:52:01 | 17:52:36 | **52 passed / 52** |
 
-**397 tests total.** Unit tests run with no database, no network and no model
+**401 tests total.** Unit tests run with no database, no network and no model
 key present. Integration tests run against real PostgreSQL. Browser tests run
 against the production build with a real database.
 
@@ -56,6 +59,7 @@ against the production build with a real database.
 | `tests/unit/dashboard-view-model.test.ts` | 21 | Card values, chart honesty, table subsets |
 | `tests/unit/performance.test.ts` | 3 | Benchmarks against maximum input |
 | `tests/unit/safe-path.test.ts` | 6 | Same-origin redirect targets, parser bypasses |
+| `tests/e2e/sponsorship.spec.ts` | 4 | Licence attribution and legal notices on every interface |
 | `tests/integration/auth.test.ts` | 11 | Sign-in, sign-up refusal, membership, roles |
 | `tests/integration/tenant-constraints.test.ts` | 6 | Database-level cross-tenant rejection |
 | `tests/integration/client-workflow.test.ts` | 24 | Clients, complaints, templates, settings |
