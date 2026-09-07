@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Archive, ArchiveRestore, Plus } from 'lucide-react';
+import { Archive, ArchiveRestore, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { TextField, TextAreaField, ErrorSummary } from '@/components/ui/fields';
 import { Card, CardHeader, ErrorState } from '@/components/ui/primitives';
@@ -297,5 +297,108 @@ export function ClientArchiveButton({
       </Button>
       {error ? <p className="text-[11px] text-negative">{error}</p> : null}
     </div>
+  );
+}
+
+/**
+ * Permanent deletion.
+ *
+ * The API has been able to do this since the data-lifecycle work; this panel is
+ * the only way an owner can reach it. The typed name must match exactly, and a
+ * near miss is refused rather than interpreted generously, because a
+ * destructive confirmation that guesses at intent is not a confirmation. An
+ * analyst is told the rule plainly instead of being handed a control the server
+ * would refuse.
+ */
+export function DeleteClientPanel({
+  client,
+  role,
+}: {
+  client: ClientView;
+  role: 'owner' | 'analyst';
+}) {
+  const router = useRouter();
+  const [typed, setTyped] = useState('');
+  const [failure, setFailure] = useState<ApiFailure | null>(null);
+  const [pending, setPending] = useState(false);
+
+  if (role !== 'owner') {
+    return (
+      <Card>
+        <CardHeader title="Removing a client" />
+        <p className="px-4 pb-4 text-[13px] leading-relaxed text-ink-muted">
+          Archiving is reversible and removes nothing, so please do not read it as a delete.
+          Permanent deletion is limited to a workspace owner.
+        </p>
+      </Card>
+    );
+  }
+
+  async function remove(event: React.FormEvent) {
+    event.preventDefault();
+    setPending(true);
+    setFailure(null);
+    try {
+      const response = await fetch(`/api/clients/${client.id}`, {
+        method: 'DELETE',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ confirmName: typed }),
+      });
+      if (!response.ok) {
+        setFailure(await readFailure(response));
+        setPending(false);
+        return;
+      }
+      // The page that was just deleted cannot be re-rendered, so the reader is
+      // sent to the list rather than left on a 404. `pending` stays true so the
+      // button cannot be pressed twice during the navigation.
+      router.push('/clients');
+      router.refresh();
+    } catch {
+      setFailure({
+        message: 'That could not be sent. Check your connection and try again.',
+        fields: {},
+      });
+      setPending(false);
+    }
+  }
+
+  return (
+    <Card className="border-negative/40">
+      <CardHeader title="Delete this client permanently" />
+      <form onSubmit={remove} className="flex flex-col gap-4 px-4 pb-4">
+        <div className="flex flex-col gap-2 text-[13px] leading-relaxed text-ink-muted">
+          <p>
+            This removes {client.name} together with its complaints, import drafts, committed
+            reports, analyses and every saved response revision, in one transaction. It cannot be
+            undone. Archiving is the reversible option and removes nothing.
+          </p>
+          <p className="text-ink-faint">
+            Two things survive by design: an audit record holding only an identifier and a count,
+            with no name, domain or content; and any export already downloaded, which this
+            application cannot reach. Database backups keep their own separate retention.
+          </p>
+        </div>
+
+        {failure ? (
+          <ErrorState title="Nothing was deleted" description={failure.message} />
+        ) : null}
+        {failure ? <ErrorSummary errors={failure.fields} /> : null}
+
+        <TextField
+          label="Type the client name to confirm"
+          hint={`Type ${client.name} exactly, including capitals.`}
+          value={typed}
+          onChange={(event) => setTyped(event.target.value)}
+        />
+
+        <div>
+          <Button type="submit" variant="danger" disabled={pending || typed.trim() === ''}>
+            <Trash2 size={15} aria-hidden />
+            {pending ? 'Deleting...' : 'Delete permanently'}
+          </Button>
+        </div>
+      </form>
+    </Card>
   );
 }

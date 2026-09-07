@@ -5,19 +5,26 @@ import { E2E_OWNER, E2E_ANALYST, E2E_PASSWORD } from './global-setup';
 /** Shared browser helpers. Everything goes through the real UI and real API. */
 
 const STATE_DIR = 'tests/e2e/.auth';
-const OWNER_STATE = `${STATE_DIR}/owner-cookies.json`;
+
+/** One cookie file per account, named from the address rather than the role. */
+function stateFile(email: string) {
+  return `${STATE_DIR}/${email.replace(/[^a-z0-9]/gi, '-')}.json`;
+}
 
 /**
  * Signs in, reusing a cached session where possible.
  *
- * The auth library rate-limits sign-in to 10 attempts a minute, which is the
- * behaviour we want in production. Signing in afresh in every test would trip
- * that limit and produce failures that look like application bugs, so the
- * owner's cookies are captured once and replayed.
+ * The auth library rate-limits sign-in, which is the behaviour we want in
+ * production. Signing in afresh in every test trips that limit and produces
+ * failures that look like application bugs, so each account's cookies are
+ * captured once and replayed. A cached session that is no longer valid -- a
+ * reset database, an expired cookie -- lands on the login page, and the real
+ * sign-in below runs instead.
  */
 export async function signIn(page: Page, email = E2E_OWNER, password = E2E_PASSWORD) {
-  if (email === E2E_OWNER && existsSync(OWNER_STATE)) {
-    await page.context().addCookies(JSON.parse(readFileSync(OWNER_STATE, 'utf8')));
+  const cached = stateFile(email);
+  if (existsSync(cached)) {
+    await page.context().addCookies(JSON.parse(readFileSync(cached, 'utf8')));
     await page.goto('/dashboard');
     if (!page.url().includes('/login')) return;
   }
@@ -28,10 +35,8 @@ export async function signIn(page: Page, email = E2E_OWNER, password = E2E_PASSW
   await page.getByRole('button', { name: 'Sign in' }).click();
   await page.waitForURL(/\/(dashboard|analyses)/, { timeout: 30_000 });
 
-  if (email === E2E_OWNER) {
-    mkdirSync(STATE_DIR, { recursive: true });
-    writeFileSync(OWNER_STATE, JSON.stringify(await page.context().cookies()), 'utf8');
-  }
+  mkdirSync(STATE_DIR, { recursive: true });
+  writeFileSync(cached, JSON.stringify(await page.context().cookies()), 'utf8');
 }
 
 export async function signInAsAnalyst(page: Page) {

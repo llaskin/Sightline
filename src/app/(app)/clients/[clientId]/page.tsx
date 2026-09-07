@@ -12,6 +12,7 @@ import { Card, CardHeader, Badge, EmptyState, NotProvided } from '@/components/u
 import { ButtonLink } from '@/components/ui/button';
 import {
   ClientArchiveButton,
+  DeleteClientPanel,
   EditClientPanel,
   type ClientView,
 } from '@/features/clients/client-form';
@@ -89,14 +90,7 @@ export default async function ClientDetailPage({
         <div className="flex flex-col gap-4">
           <EditClientPanel client={client} />
 
-          <Card>
-            <CardHeader title="Removing a client" />
-            <p className="px-4 pb-4 text-[13px] leading-relaxed text-ink-muted">
-              Permanent deletion is not available in this release. Archiving is the only removal
-              this application performs, and it is reversible. Nothing here deletes a client, its
-              reports or its analyses, so please do not read archiving as a delete.
-            </p>
-          </Card>
+          <DeleteClientPanel client={client} role={membership.role} />
         </div>
 
         <div className="flex flex-col gap-4">
