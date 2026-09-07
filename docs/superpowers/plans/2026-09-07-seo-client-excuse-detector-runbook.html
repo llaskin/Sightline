@@ -161,7 +161,7 @@ npm run reset:password -- --email analyst@example.com --activate</pre></span></s
       <ul class="checks">
         <li><label class="chk"><input type="checkbox" id="s3-01"><span class="txt"><span class="t">It loads with no sign-in at all</span><span class="why"><b>Pass:</b> the full dashboard renders in a private window.</span></span></label></li>
         <li><label class="chk"><input type="checkbox" id="s3-02"><span class="txt"><span class="t">It is unmistakably labelled as fictional</span><span class="why"><b>Pass:</b> a banner names "Northstar Services" as invented on the reserved <code class="mono">example.com</code> domain, and the response card says edits are not saved.</span></span></label></li>
-        <li><label class="chk"><input type="checkbox" id="s3-03"><span class="txt"><span class="t">Compare it against the original screenshot</span><span class="why">Open <code class="mono">docs/reference/seo-client-excuse-detector-reference.png</code> beside it. Confirm each intentional difference:</span>
+        <li><label class="chk"><input type="checkbox" id="s3-03"><span class="txt"><span class="t">Compare it against the original screenshot</span><span class="why">Open <code class="mono">docs/reference/seo-client-excuse-detector-reference.png</code> beside it. Confirm each intentional difference:</span></span></label>
           <ul class="sub-checks">
             <li><label class="chk"><input type="checkbox" id="s3-03a"><span class="txt"><span class="t">No needle gauge and no "82%" &rarr; four labelled investigation areas with one marked "selected"</span></span></label></li>
             <li><label class="chk"><input type="checkbox" id="s3-03b"><span class="txt"><span class="t">"Evidence diagnosis" with a "Rule generated" badge, not "AI Diagnosis"</span></span></label></li>
@@ -169,7 +169,7 @@ npm run reset:password -- --email analyst@example.com --activate</pre></span></s
             <li><label class="chk"><input type="checkbox" id="s3-03d"><span class="txt"><span class="t">No metric card has a small trend line under it; the screenshot showed four</span></span></label></li>
             <li><label class="chk"><input type="checkbox" id="s3-03e"><span class="txt"><span class="t">The chart's dates are consistent and real (13 Mar, 12 Apr, 12 May, 11 Jun, 11 Jul, 10 Aug 2026)</span></span></label></li>
           </ul>
-        </label></li>
+        </li>
         <li><label class="chk"><input type="checkbox" id="s3-04"><span class="txt"><span class="t">Read the suggested response as if you were the client</span><span class="why"><b>Pass, and this is the judgement only you can make:</b> it acknowledges the complaint, states the figures, says plainly that tracked actions have <em>not</em> been reconciled against the inbox or CRM, and suggests next steps without blaming anyone. If it reads as defensive or as scoring a point, say so.</span></span></label></li>
         <li><label class="chk"><input type="checkbox" id="s3-05"><span class="txt"><span class="t">Open an evidence drawer (the small &#9432; on any metric card)</span><span class="why"><b>Pass:</b> shows the formula, the numerator and denominator, the source label, when it was exported, its coverage, and what the metric can and cannot tell you. Press <kbd>Escape</kbd> &rarr; it closes and focus returns to the &#9432; you pressed.</span></span></label></li>
       </ul>
@@ -204,6 +204,7 @@ npm run reset:password -- --email analyst@example.com --activate</pre></span></s
         <li><label class="chk"><input type="checkbox" id="s5-05"><span class="txt"><span class="t">Edit the response, save, then reload</span><span class="why"><b>Pass:</b> your exact text returns and the badge changes to "Agency-edited draft". The generated version is not destroyed.</span></span></label></li>
         <li><label class="chk"><input type="checkbox" id="s5-06"><span class="txt"><span class="t">Open the same analysis in two windows and save different text in each</span><span class="why"><b>Pass:</b> one saves; the other is told someone else saved, is shown <em>both</em> versions, and still has its own wording in the editor. Nothing you typed is lost.</span></span></label></li>
         <li><label class="chk"><input type="checkbox" id="s5-07"><span class="txt"><span class="t">Regenerate with unsaved changes present</span><span class="why"><b>Pass:</b> you are warned first. Declining leaves your text alone.</span></span></label></li>
+        <li><label class="chk"><input type="checkbox" id="s5-08"><span class="txt"><span class="t">Switch clients from the header of an analysis</span><span class="why"><b>Pass:</b> with two clients that each have a saved analysis, the left dropdown in the header lists them and choosing the other one lands on <i>that</i> client's most recent analysis, not a blank dashboard. The subtitle under "Dashboard" names the client you are reading. With only one client the dropdown is hidden, because a control that cannot choose anything is decoration.</span></span></label></li>
       </ul>
     </div>
   </section>
