@@ -23,7 +23,12 @@ export function KeywordsTable({ view }: { view: DashboardViewModel }) {
         />
       ) : (
         <>
-          <div className="overflow-x-auto px-4">
+          <div
+            className="overflow-x-auto px-4"
+            tabIndex={0}
+            role="region"
+            aria-label="Top keyword movement"
+          >
             <Table rows={keywords.rows} caption={keywords.caption} />
           </div>
           <div className="mt-auto flex flex-wrap items-center justify-between gap-2 px-4 py-3">
@@ -43,7 +48,12 @@ export function KeywordsTable({ view }: { view: DashboardViewModel }) {
                 </button>
               }
             >
-              <div className="overflow-x-auto">
+              <div
+                className="overflow-x-auto"
+                tabIndex={0}
+                role="region"
+                aria-label="Full keyword cohort"
+              >
                 <Table rows={keywords.allRows} caption={keywords.caption} />
               </div>
             </Drawer>

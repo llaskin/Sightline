@@ -219,7 +219,9 @@ export function ChartTable({ view }: { view: DashboardViewModel }) {
     return <p className="text-[13px] text-ink-muted">Trend data not provided.</p>;
   }
   return (
-    <div className="overflow-x-auto">
+    /* A scrollable region must be focusable, or a keyboard-only reader cannot
+       scroll it to reach the columns that sit off-screen. */
+    <div className="overflow-x-auto" tabIndex={0} role="region" aria-label="Traffic data table">
       <table className="w-full min-w-[420px] border-collapse text-left text-[12px]">
         <caption className="sr-only">
           Organic sessions and users for each supplied reporting period

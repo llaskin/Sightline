@@ -52,3 +52,6 @@ next-env.d.ts
 /blob-report/
 /tests/e2e/.auth/
 /docs/verification-artifacts/*.png
+
+# Playwright saved sessions
+tests/e2e/.auth/

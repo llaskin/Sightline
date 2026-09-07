@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { MessageSquarePlus } from 'lucide-react';
 import { Card, CardHeader, ErrorState } from '@/components/ui/primitives';
@@ -111,12 +111,6 @@ export function ComplaintForm({
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
-  // Defaulted after mount so the server-rendered markup does not carry one
-  // machine's clock into another machine's browser.
-  useEffect(() => {
-    setReceivedAt(localDateTimeValue(new Date()));
-  }, []);
-
   async function submit(event: React.FormEvent) {
     event.preventDefault();
     setPending(true);
@@ -141,16 +135,9 @@ export function ComplaintForm({
 
       if (!response.ok) {
         const failure = await readError(response);
-        if (failure.fields) {
-          setFieldErrors(
-            Object.fromEntries(
-              Object.entries(failure.fields).map(([field, messages]) => [
-                FIELD_LABELS[field] ?? field,
-                messages,
-              ]),
-            ),
-          );
-        }
+        // Kept under the server's own field names so each control can name its
+        // own error; the summary relabels them for reading.
+        if (failure.fields) setFieldErrors(failure.fields);
         setError(failure.message ?? 'The complaint could not be saved. Nothing was recorded.');
         setPending(false);
         return;
@@ -181,13 +168,23 @@ export function ComplaintForm({
         icon={<MessageSquarePlus size={16} aria-hidden className="text-[#a99bff]" />}
       />
       <form onSubmit={submit} className="flex flex-col gap-4 px-4 pb-4">
-        {Object.keys(fieldErrors).length > 0 ? <ErrorSummary errors={fieldErrors} /> : null}
+        {Object.keys(fieldErrors).length > 0 ? (
+          <ErrorSummary
+            errors={Object.fromEntries(
+              Object.entries(fieldErrors).map(([field, messages]) => [
+                FIELD_LABELS[field] ?? field,
+                messages,
+              ]),
+            )}
+          />
+        ) : null}
         {error && Object.keys(fieldErrors).length === 0 ? (
           <ErrorState title="Not saved" description={error} />
         ) : null}
 
         <SelectField
           label="Client"
+          error={fieldErrors.clientId?.join('; ')}
           value={clientId}
           onChange={(event) => setClientId(event.target.value)}
           options={clients.map((client) => ({ value: client.id, label: client.name }))}
@@ -197,6 +194,7 @@ export function ComplaintForm({
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <SelectField
             label="Category"
+            error={fieldErrors.category?.join('; ')}
             hint="The structured category is used by the rules. It never replaces the wording below."
             value={category}
             onChange={(event) => setCategory(event.target.value as ComplaintCategory)}
@@ -205,6 +203,7 @@ export function ComplaintForm({
           />
           <SelectField
             label="Scope"
+            error={fieldErrors.scope?.join('; ')}
             hint="Organic search only, or every channel the client counts."
             value={scope}
             onChange={(event) => setScope(event.target.value as ComplaintScope)}
@@ -216,6 +215,7 @@ export function ComplaintForm({
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <TextField
             label="Complaint period start"
+            error={fieldErrors.periodStart?.join('; ')}
             type="date"
             value={periodStart}
             onChange={(event) => setPeriodStart(event.target.value)}
@@ -223,6 +223,7 @@ export function ComplaintForm({
           />
           <TextField
             label="Complaint period end"
+            error={fieldErrors.periodEnd?.join('; ')}
             type="date"
             value={periodEnd}
             onChange={(event) => setPeriodEnd(event.target.value)}
@@ -237,17 +238,31 @@ export function ComplaintForm({
           rather than answering the wrong question.
         </p>
 
-        <TextField
-          label="Received"
-          type="datetime-local"
-          hint="When the complaint reached you, in your own local time."
-          value={receivedAt}
-          onChange={(event) => setReceivedAt(event.target.value)}
-          required
-        />
+        <div className="flex flex-col gap-2">
+          <TextField
+            label="Received"
+            error={fieldErrors.receivedAt?.join('; ')}
+            type="datetime-local"
+            hint="When the complaint reached you, in your own local time."
+            value={receivedAt}
+            onChange={(event) => setReceivedAt(event.target.value)}
+            required
+          />
+          {/* Filled on request rather than on load, so the field never shows a
+              time taken from the rendering server instead of this browser. */}
+          <Button
+            type="button"
+            variant="ghost"
+            className="self-start"
+            onClick={() => setReceivedAt(localDateTimeValue(new Date()))}
+          >
+            Use the current time
+          </Button>
+        </div>
 
         <TextAreaField
           label="What the client said, in their own words"
+          error={fieldErrors.originalText?.join('; ')}
           hint="Paste or type the wording exactly as it arrived, including anything that reads like an instruction. It is stored verbatim, quoted back as evidence, and never acted on as an instruction."
           value={originalText}
           maxLength={MAX_COMPLAINT_TEXT}
@@ -336,21 +351,21 @@ export function ComplaintStatusActions({
         </p>
       ) : null}
       {staleRevision !== null ? (
-        <p role="alert" className="text-[11px] text-caution">
-          Someone else changed this complaint while the page was open (it is now at revision{' '}
-          {staleRevision}). Nothing was overwritten.{' '}
-          <button
-            type="button"
-            className="underline"
+        <div role="alert" className="flex flex-col items-start gap-1">
+          <p className="text-[11px] leading-relaxed text-caution">
+            Someone else changed this complaint while the page was open (it is now at revision{' '}
+            {staleRevision}). Nothing was overwritten.
+          </p>
+          <Button
+            variant="ghost"
             onClick={() => {
               setStaleRevision(null);
               router.refresh();
             }}
           >
             Reload to see the current state
-          </button>
-          .
-        </p>
+          </Button>
+        </div>
       ) : null}
     </div>
   );

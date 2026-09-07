@@ -75,6 +75,17 @@ export function analyzeReport(
   const assessment = assessComplaint(report, complaint, quality, signals);
 
   const gaps = quality.gaps.map((code) => GAP_TEXT[code] ?? code);
+
+  // When the base signal is ineligible, say which condition failed. Telling
+  // someone "more comparable evidence is needed" without naming the reason
+  // leaves them nothing to act on.
+  if (!signals.baseEligible) {
+    for (const code of quality.datasetFlags.organic.reasons) {
+      const text = GAP_TEXT[code] ?? code;
+      if (!gaps.includes(text)) gaps.push(text);
+    }
+  }
+
   if (diagnosis === 'no_clear_issue') {
     // Rising sessions and stable ranks are not proof that leads arrived.
     gaps.push(GAP_TEXT.MEASUREMENT_UNRESOLVED);

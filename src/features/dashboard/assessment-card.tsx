@@ -115,7 +115,9 @@ function FocusIndicator({ view }: { view: DashboardViewModel }) {
                 option.selected ? 'font-semibold text-ink' : 'text-ink-faint'
               }`}
             >
-              {option.label}
+              {/* The name and the marker are separate elements so assistive
+                  technology reads them as two facts, not one run-on string. */}
+              <span>{option.label}</span>
               {option.selected ? (
                 <span className="ml-2 text-[11px] font-normal text-ink-muted">selected</span>
               ) : null}

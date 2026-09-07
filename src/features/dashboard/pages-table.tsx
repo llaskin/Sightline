@@ -26,7 +26,12 @@ export function PagesTable({ view }: { view: DashboardViewModel }) {
         />
       ) : (
         <>
-          <div className="overflow-x-auto px-4">
+          <div
+            className="overflow-x-auto px-4"
+            tabIndex={0}
+            role="region"
+            aria-label="Top performing pages"
+          >
             <Table rows={pages.rows} caption={pages.caption} />
           </div>
           <div className="mt-auto flex flex-wrap items-center justify-between gap-2 px-4 py-3">
@@ -53,7 +58,12 @@ export function PagesTable({ view }: { view: DashboardViewModel }) {
               >
                 Sort by current sessions: {sortDescending ? 'highest first' : 'lowest first'}
               </button>
-              <div className="overflow-x-auto">
+              <div
+                className="overflow-x-auto"
+                tabIndex={0}
+                role="region"
+                aria-label="All landing pages"
+              >
                 <Table rows={sorted} caption={pages.caption} showBaseline />
               </div>
             </Drawer>

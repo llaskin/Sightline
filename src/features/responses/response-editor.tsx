@@ -41,6 +41,19 @@ export function ResponseEditor({
 
   const dirty = draft !== saved.text;
 
+  /**
+   * Selects the draft after a refused clipboard write.
+   *
+   * This runs as an effect rather than on a zero-delay timer: the textarea does
+   * not exist until the `editing` re-render has committed, and a timer only
+   * happens to win that race most of the time.
+   */
+  useEffect(() => {
+    if (status !== 'copyFailed' || !editing) return;
+    textareaRef.current?.focus();
+    textareaRef.current?.select();
+  }, [status, editing]);
+
   // Warn before a reload or tab close would discard unsaved wording.
   useEffect(() => {
     if (!dirty) return;
@@ -139,13 +152,10 @@ export function ResponseEditor({
       await navigator.clipboard.writeText(draft);
       setStatus('copied');
     } catch {
-      // Clipboard permission can be refused. Select the text so the user can
-      // copy it by hand rather than being told it simply failed.
+      // Clipboard permission can be refused. Reveal the editor and let the
+      // effect below select the text once the textarea has actually mounted,
+      // so the user can copy it by hand instead of just being told it failed.
       setEditing(true);
-      window.setTimeout(() => {
-        textareaRef.current?.focus();
-        textareaRef.current?.select();
-      }, 0);
       setStatus('copyFailed');
     }
   }
@@ -212,7 +222,15 @@ export function ResponseEditor({
             </p>
           </>
         ) : (
-          <div className="max-h-[420px] overflow-y-auto rounded-[10px] border border-line-strong bg-canvas p-3">
+          <div
+            className="max-h-[420px] overflow-y-auto rounded-[10px] border border-line-strong bg-canvas p-3"
+            // Focusable so a keyboard-only reader can scroll a long draft. A
+            // scrollable region that cannot be reached by keyboard hides its
+            // lower half from anyone not using a mouse.
+            tabIndex={0}
+            role="region"
+            aria-label="Suggested response draft"
+          >
             <p className="whitespace-pre-wrap text-[13px] leading-relaxed text-ink">{draft}</p>
           </div>
         )}
