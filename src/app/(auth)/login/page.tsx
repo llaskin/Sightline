@@ -1,3 +1,7 @@
+/*
+ * Renders SponsorBanner. The attribution it displays is required by additional
+ * terms under AGPL-3.0 section 7; see ADDITIONAL-TERMS.md.
+ */
 import { Suspense } from 'react';
 import { LoginForm } from '@/features/auth/login-form';
 import { BrandMark } from '@/components/navigation';

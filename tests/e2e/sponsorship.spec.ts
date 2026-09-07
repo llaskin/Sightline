@@ -40,6 +40,13 @@ async function expectNotices(page: import('@playwright/test').Page, where: strin
   const licence = footer.getByRole('link', { name: 'AGPL-3.0' });
   await expect(licence, `${where} does not say how to view the licence`).toBeVisible();
   await expect(licence).toHaveAttribute('href', /gnu\.org\/licenses\/agpl-3\.0/);
+
+  // AGPL section 13: anyone using this over a network must be offered its
+  // source. The URL is not asserted, only that one is offered -- a fork must
+  // point this at its own repository, and should still pass.
+  const source = footer.getByRole('link', { name: 'Source' });
+  await expect(source, `${where} makes no section 13 source offer`).toBeVisible();
+  await expect(source).toHaveAttribute('href', /^https?:\/\/.+/);
 }
 
 test('every signed-out interface carries the attribution and legal notices', async ({

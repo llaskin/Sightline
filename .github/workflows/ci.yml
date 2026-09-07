@@ -45,6 +45,9 @@ jobs:
       BETTER_AUTH_URL: http://127.0.0.1:3110
       APP_ORIGIN: http://127.0.0.1:3110
       E2E_PORT: '3110'
+      # Built into the client bundle, so the footer's section 13 source offer is
+      # present in the artefact the browser suite exercises.
+      NEXT_PUBLIC_SOURCE_URL: https://github.com/llaskin/Sightline
 
     steps:
       - uses: actions/checkout@v4

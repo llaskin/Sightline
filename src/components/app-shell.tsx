@@ -1,5 +1,10 @@
 'use client';
 
+/*
+ * Renders SponsorBanner. The attribution it displays is required by additional
+ * terms under AGPL-3.0 section 7; see ADDITIONAL-TERMS.md.
+ */
+
 import { useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import { Menu, X, LogOut } from 'lucide-react';

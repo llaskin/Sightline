@@ -136,8 +136,11 @@ release. An operator provisions accounts through the CLI.
 
 This project is sponsored by
 **[AI Find My Business](https://www.aifindmybusiness.com)** and is released
-under the **GNU Affero General Public License v3.0**, with additional terms
-under section 7 of that licence. See [LICENSE](LICENSE) for the full text.
+under the **GNU Affero General Public License v3.0**
+([LICENSE](LICENSE)) **with additional terms under section 7 of that licence**
+([ADDITIONAL-TERMS.md](ADDITIONAL-TERMS.md)). Both apply. Read them together:
+`LICENSE` is the unmodified AGPL text, and the section 7 terms are kept in
+their own file so that automated licence detection recognises the base licence.
 
 You may use, study, modify, redistribute and host it, including commercially.
 Three conditions come with that:
@@ -150,8 +153,9 @@ Three conditions come with that:
    based on this one. You may restyle it; you may not remove or hide it.
 2. **Network use means publishing source.** AGPL section 13 applies: if you let
    users interact with a modified version over a network, you must offer them
-   its source. Set `NEXT_PUBLIC_SOURCE_URL` to your public repository before you
-   deploy, and the footer will show a `Source` link.
+   its source. Set `NEXT_PUBLIC_SOURCE_URL` to your own repository and the
+   footer shows a `Source` link. It is read at build time, so set it before
+   `npm run build`.
 3. **Modified versions must be marked as different**, and the licence grants no
    rights in the AI Find My Business name or marks.
 

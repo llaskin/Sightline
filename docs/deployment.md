@@ -28,6 +28,7 @@ CRM, no email sender, no model provider. Those are later phases.
 | `BETTER_AUTH_URL` | yes | Public base URL, e.g. `https://sightline.example.com`. |
 | `APP_ORIGIN` | yes | Origin allowed to send state-changing requests. Normally identical to `BETTER_AUTH_URL`. |
 | `NODE_ENV` | yes | `production`. This enables secure cookies and refuses demo seeding. |
+| `NEXT_PUBLIC_SOURCE_URL` | yes, in practice | Public URL of the source for the version you are running. AGPL-3.0 section 13 obliges you to offer source to anyone using it over a network; the footer renders this as a `Source` link, and omits the link entirely when unset. If you run a modified version, this must point at *your* source, not upstream. Read at build time, so it must be set for `npm run build`, not only at runtime. |
 | `TEST_DATABASE_URL` | no | CI only. Must never point at production. |
 
 The application refuses to start with an invalid configuration and names only

@@ -1,3 +1,7 @@
+/*
+ * Renders SponsorBanner. The attribution it displays is required by additional
+ * terms under AGPL-3.0 section 7; see ADDITIONAL-TERMS.md.
+ */
 import Link from 'next/link';
 import { analyzeReport } from '@/domain/analyze';
 import { renderResponse, DEFAULT_TEMPLATE_BODY } from '@/domain/render-response';

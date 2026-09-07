@@ -4,11 +4,18 @@
  * ----------------------------------------------------------------------------
  * DO NOT REMOVE OR OBSCURE THIS COMPONENT, OR THE ATTRIBUTION IT DISPLAYS.
  *
- * This project is licensed under the GNU Affero General Public License v3.0
- * with an additional term under AGPL-3.0 section 7(b), which requires that the
- * attribution rendered here be preserved in this work and in every work based
- * on it. The full term is in LICENSE, under "ADDITIONAL TERMS UNDER SECTION 7".
- * Removing it removes your licence to use this software at all.
+ * NOTICE OF ADDITIONAL TERMS, given as AGPL-3.0 section 7 requires.
+ *
+ * This program is licensed under the GNU Affero General Public License v3.0
+ * (see LICENSE) WITH ADDITIONAL TERMS under section 7 of that License. Those
+ * terms are stated in full in ADDITIONAL-TERMS.md at the root of this
+ * repository, and they apply to this file.
+ *
+ * Term 1, under section 7(b), requires that the attribution rendered here be
+ * preserved in the Appropriate Legal Notices displayed by this program and by
+ * every work based on it. Removing it removes your licence to use this
+ * software at all: under section 8, your rights terminate automatically if you
+ * violate the License, and these terms are part of it.
  * ----------------------------------------------------------------------------
  *
  * This bar is deliberately more than a sponsor credit. AGPL-3.0 section 0
