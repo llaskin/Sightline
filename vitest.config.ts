@@ -1,12 +1,13 @@
 import { defineConfig } from 'vitest/config';
-import tsconfigPaths from 'vite-tsconfig-paths';
+
+const shared = { resolve: { tsconfigPaths: true } } as const;
 
 export default defineConfig({
-  plugins: [tsconfigPaths()],
+  ...shared,
   test: {
     projects: [
       {
-        plugins: [tsconfigPaths()],
+        ...shared,
         test: {
           name: 'unit',
           include: ['tests/unit/**/*.test.ts'],
@@ -14,7 +15,7 @@ export default defineConfig({
         },
       },
       {
-        plugins: [tsconfigPaths()],
+        ...shared,
         test: {
           name: 'integration',
           include: ['tests/integration/**/*.test.ts'],
