@@ -19,7 +19,7 @@ Release 1 needs **no Google credentials and no AI provider key**.
 # 1. Install locked dependencies
 npm ci
 
-# 2. Start PostgreSQL (development + isolated test database on port 5433)
+# 2. Start PostgreSQL (development, integration and browser databases on port 5433)
 docker compose up -d
 
 # 3. Configure environment
@@ -51,7 +51,7 @@ data volume. `docker compose down -v` also destroys the data.
 |---|---|
 | 3100 | `npm run dev` / `npm run start` |
 | 3110 | Playwright's production server during `npm run test:e2e` |
-| 5433 | PostgreSQL (development database `excuse_detector`, test database `excuse_detector_test`) |
+| 5433 | PostgreSQL: `excuse_detector` (development), `excuse_detector_test` (integration), `excuse_detector_e2e` (browser) |
 
 ## Environment variables
 
@@ -59,6 +59,7 @@ data volume. `docker compose down -v` also destroys the data.
 |---|---|---|
 | `DATABASE_URL` | yes | Application database connection. |
 | `TEST_DATABASE_URL` | integration tests only | Must name a database ending in `_test`. There is deliberately **no** fallback to `DATABASE_URL`. |
+| `E2E_DATABASE_URL` | browser tests only | The database `npm run test:e2e` resets and reseeds. Kept separate from both of the above so a browser run cannot destroy development data or race the integration suite. |
 | `BETTER_AUTH_SECRET` | yes | Session signing secret, minimum 32 characters. |
 | `BETTER_AUTH_URL` | yes | Public base URL of the application. |
 | `APP_ORIGIN` | yes | Origin permitted to send state-changing requests. |
@@ -75,6 +76,10 @@ npm run test:e2e      # Playwright browser + accessibility checks
 ```
 
 `npm run test:e2e` needs a browser binary once: `npx playwright install chromium`.
+
+It serves the output of the last `npm run build` rather than building for
+itself, so **run `npm run build` first** after changing anything under `src/`.
+Running the commands in the order listed above does this for you.
 
 ## Operator CLI
 
