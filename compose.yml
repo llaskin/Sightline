@@ -1,0 +1,30 @@
+# Local development and test database for the SEO Client Excuse Detector.
+# Ports are deliberately non-default (5433) so this stack cannot collide with
+# another PostgreSQL already bound to 5432 on the host.
+#
+#   Start:  docker compose up -d
+#   Stop:   docker compose down
+#   Reset:  docker compose down -v      (destroys the named volume)
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: excuse-detector-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: excuse
+      POSTGRES_PASSWORD: excuse_local_dev
+      POSTGRES_DB: excuse_detector
+    ports:
+      - '5433:5432'
+    volumes:
+      - excuse-detector-pgdata:/var/lib/postgresql/data
+      - ./scripts/db-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U excuse -d excuse_detector']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  excuse-detector-pgdata:
+    name: excuse-detector-pgdata
