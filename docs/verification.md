@@ -54,6 +54,7 @@ against the production build with a real database.
 | `tests/unit/exports.test.ts` | 19 | Markdown escaping, CSV formula neutralisation |
 | `tests/unit/dashboard-view-model.test.ts` | 21 | Card values, chart honesty, table subsets |
 | `tests/unit/performance.test.ts` | 3 | Benchmarks against maximum input |
+| `tests/unit/safe-path.test.ts` | 6 | Same-origin redirect targets, parser bypasses |
 | `tests/integration/auth.test.ts` | 11 | Sign-in, sign-up refusal, membership, roles |
 | `tests/integration/tenant-constraints.test.ts` | 6 | Database-level cross-tenant rejection |
 | `tests/integration/client-workflow.test.ts` | 24 | Clients, complaints, templates, settings |
@@ -62,7 +63,7 @@ against the production build with a real database.
 | `tests/integration/response-revisions.test.ts` | 10 | Draft saves, conflicts, regeneration |
 | `tests/integration/retention.test.ts` | 20 | Retention cutoffs, client deletion |
 | `tests/integration/security-boundaries.test.ts` | 14 | 401/403/404 matrix, origin, bounds |
-| `tests/e2e/import-workflow.spec.ts` | 6 | Full browser import journey, return navigation |
+| `tests/e2e/import-workflow.spec.ts` | 6 | Full browser import journey, return navigation, redirect safety |
 | `tests/e2e/analysis-workflow.spec.ts` | 7 | Diagnosis, drawers, export, reanalysis, client switching |
 | `tests/e2e/response-conflict.spec.ts` | 4 | Concurrent editing, clipboard fallback |
 | `tests/e2e/navigation-and-states.spec.ts` | 8 | Every destination, empty and failure states |
@@ -189,10 +190,12 @@ fail is only a hope.
 The `_test` database guard was observed refusing to run twice: once with
 `TEST_DATABASE_URL` unset, and once when it matched `DATABASE_URL`.
 
-The `returnTo` redirect guard was disabled the same way -- replaced with
-`returnTo ?? null` -- rebuilt, and `e2e/import-workflow.spec.ts` failed on the
-off-site case; the guard was restored and the file diffed to confirm it came
-back unchanged.
+The redirect guard in `src/lib/safe-path.ts` was replaced with the string check
+it superseded, rebuilt, and the unit test plus both browser cases failed; it was
+restored and compared byte-for-byte. This one is worth stating carefully,
+because the first version of that proof was misleading: the guard was disabled
+and watched to fail against a single hostile input, which showed only that it
+blocked that input. It did not block `/\example.net/steal`.
 
 ## Acceptance matrix
 
@@ -285,10 +288,23 @@ loosening.
 16. **`returnTo` was built but never read.** `/analyses/new` sends the reader to
     the import wizard with a `returnTo` parameter; `/reports/new` ignored it, so
     committing landed on the report page and the reader had to navigate back and
-    reselect the complaint. Now honoured, with the value sanitised on the server
-    -- one leading slash only, which rules out an absolute URL and the
-    protocol-relative `//host` form. The guard was proven by disabling it and
-    watching the browser test fail.
+    reselect the complaint. Now honoured, with the value sanitised on the server.
+17. **An open redirect in the sign-in and import return paths.** Both checked
+    that the value started with `/` and not `//`. That is the wrong check: for
+    http(s) the URL parser treats a backslash as a slash and strips tabs,
+    newlines and carriage returns before parsing, so `/\example.net/steal`
+    begins with a single forward slash and still resolves to another origin. A
+    browser demonstrated it, reporting `navigated to "http://example.net/steal"`.
+    The sign-in instance (`?next=`) predates this session and is the more
+    serious of the two, being the classic post-authentication phishing vector.
+    Both now use one shared `sameOriginPath`, which parses the candidate against
+    an unreachable sentinel base and compares origins, so every parser
+    normalisation is covered rather than enumerated.
+
+    Worth recording plainly: the first fix here was mine, made an hour earlier,
+    and I recorded it as "proven" after disabling it and watching one hostile
+    input fail. Watching a guard reject the input you thought of is not the same
+    as watching it reject the inputs you did not.
 
 ## Clean-setup rehearsal
 
@@ -318,6 +334,17 @@ code (AC-20).
 
 ## Limitations and what was not verified
 
+- **The sign-in redirect has no browser test.** Driving it needs a third real
+  form sign-in, and the auth rate limit (10 requests a minute across the auth
+  endpoints, against a suite that runs in about one) refuses it consistently.
+  The shared `sameOriginPath` is covered exhaustively by unit tests and end to
+  end through the import path; the login form's use of it is a single call.
+- **A rate-limited sign-in reads as a wrong password.** The form deliberately
+  shows one generic message for every failure so it cannot be used to discover
+  which addresses have accounts. The consequence is that a legitimate user who
+  has been rate-limited is told their credentials were not recognised. That is a
+  deliberate trade, not an oversight, but it is a real usability cost and it was
+  what made the removed test above look like an application bug.
 - **Chromium only.** The browser suite runs one engine. Firefox and WebKit were
   not exercised.
 - **One machine.** Performance figures are from an Apple silicon laptop with
