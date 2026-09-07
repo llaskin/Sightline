@@ -18,10 +18,23 @@ export const dynamic = 'force-dynamic';
 export default async function NewReportPage({
   searchParams,
 }: {
-  searchParams: Promise<{ clientId?: string; draftId?: string; supersedes?: string }>;
+  searchParams: Promise<{
+    clientId?: string;
+    draftId?: string;
+    supersedes?: string;
+    returnTo?: string;
+  }>;
 }) {
   const membership = await pageMembership();
-  const { clientId, draftId, supersedes } = await searchParams;
+  const { clientId, draftId, supersedes, returnTo } = await searchParams;
+
+  // Where to go after a successful commit, when another screen sent the reader
+  // here. Sanitised on the server so a hostile value never reaches the client:
+  // one leading slash only, which rules out both an absolute URL and the
+  // protocol-relative "//host" form. Anything else is dropped rather than
+  // corrected, and the wizard falls back to the new report.
+  const returnPath =
+    returnTo && returnTo.startsWith('/') && !returnTo.startsWith('//') ? returnTo : null;
 
   const clientPage = await listClients(membership, { limit: 100, cursor: null });
   const clients: WizardClient[] = clientPage.items.map((row) => {
@@ -142,6 +155,7 @@ export default async function NewReportPage({
         initialDraft={initialDraft}
         prefillMetadata={prefillMetadata}
         supersedesReportId={supersedesReportId}
+        returnPath={returnPath}
         limits={{
           maxBytes: DEFAULT_LIMITS.maxBytes,
           maxRows: DEFAULT_LIMITS.maxRows,

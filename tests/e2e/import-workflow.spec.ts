@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
-import { signIn, rawGet } from './helpers';
+import { signIn, rawGet, api } from './helpers';
 
 /**
  * The full import journey, driven entirely through the browser: sign in, create
@@ -236,4 +236,80 @@ test('the forms template round-trips through the wizard', async ({ page }) => {
   await signIn(page);
   await page.goto('/reports/new');
   await expect(page.getByRole('heading', { name: 'Import a report' })).toBeVisible();
+});
+
+test('an import started from an analysis returns to where it began', async ({ page }) => {
+  await signIn(page);
+  const { makeDemoReport } = await import('../../src/domain/fixtures/demo-report');
+  const report = makeDemoReport();
+
+  // A validated draft, built through the API so this test exercises the
+  // navigation rather than re-driving the whole wizard by hand.
+  const client = await api<{ id: string }>(page, 'POST', '/api/clients', {
+    name: 'Return Trip Client',
+    domain: 'example.com',
+    timeZone: 'America/New_York',
+  });
+  const draft = await api<{ id: string; revision: number }>(page, 'POST', '/api/imports', {
+    clientId: client.id,
+  });
+  const saved = await api<{ revision: number }>(page, 'PATCH', `/api/imports/${draft.id}`, {
+    expectedRevision: draft.revision,
+    metadata: report.metadata,
+    datasets: report.datasets,
+    sources: report.sources,
+    selectedForm: report.selectedForm,
+    formDefinitionAcknowledged: report.formDefinitionAcknowledged,
+    trendGranularity: report.trendGranularity,
+  });
+  await api(page, 'POST', `/api/imports/${draft.id}/validate`, {
+    expectedRevision: saved.revision,
+  });
+
+  const back = `/analyses/new?clientId=${client.id}`;
+  await page.goto(`/reports/new?draftId=${draft.id}&returnTo=${encodeURIComponent(back)}`);
+  await page.getByRole('button', { name: '5. Commit' }).click();
+  await page.getByRole('button', { name: 'Commit report' }).click();
+
+  // Back to the analysis screen that sent us here, not the report page.
+  await page.waitForURL(/\/analyses\/new/, { timeout: 30_000 });
+  expect(page.url()).toContain(client.id);
+});
+
+test('a returnTo pointing off-site is ignored', async ({ page }) => {
+  await signIn(page);
+  const { makeDemoReport } = await import('../../src/domain/fixtures/demo-report');
+  const report = makeDemoReport();
+
+  const client = await api<{ id: string }>(page, 'POST', '/api/clients', {
+    name: 'Hostile Return Client',
+    domain: 'example.com',
+    timeZone: 'America/New_York',
+  });
+  const draft = await api<{ id: string; revision: number }>(page, 'POST', '/api/imports', {
+    clientId: client.id,
+  });
+  const saved = await api<{ revision: number }>(page, 'PATCH', `/api/imports/${draft.id}`, {
+    expectedRevision: draft.revision,
+    metadata: report.metadata,
+    datasets: report.datasets,
+    sources: report.sources,
+    selectedForm: report.selectedForm,
+    formDefinitionAcknowledged: report.formDefinitionAcknowledged,
+    trendGranularity: report.trendGranularity,
+  });
+  await api(page, 'POST', `/api/imports/${draft.id}/validate`, {
+    expectedRevision: saved.revision,
+  });
+
+  // An absolute URL must not become a redirect target just because it arrived
+  // in the query string. Committing goes to the report, as if no returnTo had
+  // been supplied at all.
+  const hostile = encodeURIComponent('https://example.net/steal');
+  await page.goto(`/reports/new?draftId=${draft.id}&returnTo=${hostile}`);
+  await page.getByRole('button', { name: '5. Commit' }).click();
+  await page.getByRole('button', { name: 'Commit report' }).click();
+
+  await page.waitForURL(/\/reports\/[0-9a-f-]{36}/, { timeout: 30_000 });
+  expect(page.url()).not.toContain('example.net');
 });

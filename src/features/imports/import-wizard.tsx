@@ -176,6 +176,7 @@ export function ImportWizard({
   initialDraft,
   prefillMetadata,
   supersedesReportId,
+  returnPath = null,
   limits,
 }: {
   clients: WizardClient[];
@@ -183,6 +184,8 @@ export function ImportWizard({
   initialDraft: DraftView | null;
   prefillMetadata: MetadataValue | null;
   supersedesReportId: string | null;
+  /** Already sanitised by the route: a same-origin path, or null. */
+  returnPath?: string | null;
   limits: { maxBytes: number; maxRows: number; maxReportedErrors: number };
 }) {
   const router = useRouter();
@@ -515,7 +518,10 @@ export function ImportWizard({
       const body = await response.json();
       // The key is kept: a retry of this same action must replay, not create a
       // second report. Busy stays set while the navigation happens.
-      router.push(`/reports/${body.data.id}`);
+      // Back to the screen that sent us here, when there was one. Creating an
+      // analysis is the case that matters: without this the reader lands on the
+      // report and has to find their way back and reselect the complaint.
+      router.push(returnPath ?? `/reports/${body.data.id}`);
     } catch {
       setFailure(NETWORK_FAILURE);
       setBusy(null);
