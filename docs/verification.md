@@ -24,18 +24,18 @@ reset and reseeded per run).
 
 Run on 2026-09-07. Every command exited 0.
 
-Final run on commit `aaee830` with a clean working tree (0 modified files).
+Final run on commit `abf0278` with a clean working tree (0 modified files).
 
 | Command | Started | Finished | Result |
 |---|---|---|---|
-| `npm run lint` | 15:55:03 | 15:55:06 | exit 0, no errors, no warnings |
-| `npm run typecheck` | 15:55:06 | 15:55:08 | exit 0 |
-| `npm run test:unit` | 15:55:08 | 15:55:09 | **219 passed / 219** |
-| `npm run test:integration` | 15:55:09 | 15:55:41 | **124 passed / 124** |
-| `npm run build` | 15:55:41 | 15:55:46 | exit 0, 38 routes |
-| `npm run test:e2e` | 15:55:46 | 15:56:14 | **46 passed / 46** |
+| `npm run lint` | 16:12:15 | 16:12:18 | exit 0, no errors, no warnings |
+| `npm run typecheck` | 16:12:18 | 16:12:19 | exit 0 |
+| `npm run test:unit` | 16:12:19 | 16:12:20 | **219 passed / 219** |
+| `npm run test:integration` | 16:12:20 | 16:12:52 | **124 passed / 124** |
+| `npm run build` | 16:12:52 | 16:12:57 | exit 0, 38 routes |
+| `npm run test:e2e` | 16:12:57 | 16:13:26 | **48 passed / 48** |
 
-**389 tests total.** Unit tests run with no database, no network and no model
+**391 tests total.** Unit tests run with no database, no network and no model
 key present. Integration tests run against real PostgreSQL. Browser tests run
 against the production build with a real database.
 
@@ -62,7 +62,7 @@ against the production build with a real database.
 | `tests/integration/response-revisions.test.ts` | 10 | Draft saves, conflicts, regeneration |
 | `tests/integration/retention.test.ts` | 20 | Retention cutoffs, client deletion |
 | `tests/integration/security-boundaries.test.ts` | 14 | 401/403/404 matrix, origin, bounds |
-| `tests/e2e/import-workflow.spec.ts` | 4 | Full browser import journey |
+| `tests/e2e/import-workflow.spec.ts` | 6 | Full browser import journey, return navigation |
 | `tests/e2e/analysis-workflow.spec.ts` | 7 | Diagnosis, drawers, export, reanalysis, client switching |
 | `tests/e2e/response-conflict.spec.ts` | 4 | Concurrent editing, clipboard fallback |
 | `tests/e2e/navigation-and-states.spec.ts` | 8 | Every destination, empty and failure states |
@@ -189,6 +189,11 @@ fail is only a hope.
 The `_test` database guard was observed refusing to run twice: once with
 `TEST_DATABASE_URL` unset, and once when it matched `DATABASE_URL`.
 
+The `returnTo` redirect guard was disabled the same way -- replaced with
+`returnTo ?? null` -- rebuilt, and `e2e/import-workflow.spec.ts` failed on the
+off-site case; the guard was restored and the file diffed to confirm it came
+back unchanged.
+
 ## Acceptance matrix
 
 | ID | Scenario | Status | Evidence |
@@ -277,6 +282,13 @@ loosening.
     analyst test tripped the auth rate limit, and the failure surfaced 30 seconds
     later as a navigation timeout that read like an application bug. Each account
     now caches its own cookies, which is what the owner path already did.
+16. **`returnTo` was built but never read.** `/analyses/new` sends the reader to
+    the import wizard with a `returnTo` parameter; `/reports/new` ignored it, so
+    committing landed on the report page and the reader had to navigate back and
+    reselect the complaint. Now honoured, with the value sanitised on the server
+    -- one leading slash only, which rules out an absolute URL and the
+    protocol-relative `//host` form. The guard was proven by disabling it and
+    watching the browser test fail.
 
 ## Clean-setup rehearsal
 
