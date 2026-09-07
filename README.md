@@ -1,4 +1,4 @@
-# SEO Client Excuse Detector
+# Sightline
 
 **Sponsored by [AI Find My Business](https://www.aifindmybusiness.com)**
 
@@ -45,8 +45,8 @@ provider key are needed.
 ## Quick start
 
 ```bash
-git clone https://github.com/<owner>/seo-client-excuse-detector.git
-cd seo-client-excuse-detector
+git clone https://github.com/<owner>/sightline.git
+cd sightline
 
 npm ci
 docker compose up -d                 # PostgreSQL 16 on port 5433

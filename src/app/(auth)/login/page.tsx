@@ -5,7 +5,7 @@ import { SponsorBanner } from '@/components/sponsor-banner';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata = { title: 'Sign in - SEO Client Excuse Detector' };
+export const metadata = { title: 'Sign in - Sightline' };
 
 export default function LoginPage() {
   return (
@@ -14,11 +14,7 @@ export default function LoginPage() {
       <div className="w-full max-w-[400px]">
         <div className="mb-6 flex items-center gap-3">
           <BrandMark />
-          <h1 className="text-[20px] font-semibold leading-tight text-ink">
-            SEO Client
-            <br />
-            Excuse Detector
-          </h1>
+          <h1 className="text-[22px] font-semibold leading-tight text-ink">Sightline</h1>
         </div>
         <div className="rounded-[12px] border border-line bg-surface p-5">
           <Suspense fallback={null}>

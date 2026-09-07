@@ -23,7 +23,7 @@ import { formatDateRange, formatInstant } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata = { title: 'Complaints - SEO Client Excuse Detector' };
+export const metadata = { title: 'Complaints - Sightline' };
 
 const PAGE_SIZE = 25;
 

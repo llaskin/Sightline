@@ -16,8 +16,8 @@ run, and its real output is reported, including what could not be checked.
 | Vitest | 4.1.11 |
 | Playwright | 1.63.0, Chromium 153.0.8010.12 |
 
-Three separate databases: `excuse_detector` (development), `excuse_detector_test`
-(integration, truncated between tests), `excuse_detector_e2e` (browser suite,
+Three separate databases: `sightline` (development), `sightline_test`
+(integration, truncated between tests), `sightline_e2e` (browser suite,
 reset and reseeded per run).
 
 ## The full gate

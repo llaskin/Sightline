@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<!-- Manual validation runbook for SEO Client Excuse Detector release 1.
+<!-- Manual validation runbook for Sightline release 1.
      Self-contained: inline CSS and JS only, no network or dependencies. -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SEO Client Excuse Detector — Release 1 Test Runbook</title>
+<title>Sightline — Release 1 Test Runbook</title>
 <style>
   :root{
     --bg:#0f1420; --panel:#161d2e; --panel2:#1c2436; --ink:#e6ebf5; --muted:#9aa7c0;
@@ -76,7 +76,7 @@
 <body>
 <header>
   <div class="wrap">
-    <h1>SEO Client Excuse Detector &mdash; Release 1 Test Runbook</h1>
+    <h1>Sightline &mdash; Release 1 Test Runbook</h1>
     <p class="sub">Operator and human validation the automated suite cannot cover. 385 automated tests already pass; this page is the other gate.</p>
     <div class="progwrap">
       <div class="bar"><i id="fill"></i></div>
@@ -121,10 +121,10 @@
     <div class="body">
       <p class="lead">Follow the README's quick start exactly as a new person would. The point is to catch instructions that only work because my machine is already set up.</p>
       <ul class="checks">
-        <li><label class="chk"><input type="checkbox" id="s1-01"><span class="txt"><span class="t">Install dependencies</span><span class="why"><b>Pass:</b> completes with no errors. Four moderate <code class="mono">npm audit</code> advisories are expected and documented (drizzle-kit's build-time esbuild, not shipped).<pre>cd /Users/leolaskin/Development/SEO_Client_Excuse_detector
+        <li><label class="chk"><input type="checkbox" id="s1-01"><span class="txt"><span class="t">Install dependencies</span><span class="why"><b>Pass:</b> completes with no errors. Four moderate <code class="mono">npm audit</code> advisories are expected and documented (drizzle-kit's build-time esbuild, not shipped).<pre>cd /path/to/sightline
 npm ci</pre></span></span></label></li>
         <li><label class="chk"><input type="checkbox" id="s1-02"><span class="txt"><span class="t">Start PostgreSQL</span><span class="why"><b>Pass:</b> the container is healthy and all three databases exist.<pre>docker compose up -d
-docker exec excuse-detector-db psql -U excuse -l | grep excuse</pre>Expect <code class="mono">excuse_detector</code>, <code class="mono">excuse_detector_test</code> and <code class="mono">excuse_detector_e2e</code>.</span></span></label></li>
+docker exec sightline-db psql -U excuse -l | grep excuse</pre>Expect <code class="mono">sightline</code>, <code class="mono">sightline_test</code> and <code class="mono">sightline_e2e</code>.</span></span></label></li>
         <li><label class="chk"><input type="checkbox" id="s1-03"><span class="txt"><span class="t">Configure the environment</span><span class="why"><b>Pass:</b> <code class="mono">.env.example</code> exists in the repo (it was previously being swallowed by a broad <code class="mono">.env*</code> ignore rule) and copying it works.<pre>cp .env.example .env.local
 openssl rand -base64 32   # paste into BETTER_AUTH_SECRET</pre></span></span></label></li>
         <li><label class="chk"><input type="checkbox" id="s1-04"><span class="txt"><span class="t">Apply migrations</span><span class="why"><b>Pass:</b> "migrations applied successfully".<pre>npm run db:migrate</pre></span></span></label></li>
@@ -161,7 +161,7 @@ npm run reset:password -- --email analyst@example.com --activate</pre></span></s
       <ul class="checks">
         <li><label class="chk"><input type="checkbox" id="s3-01"><span class="txt"><span class="t">It loads with no sign-in at all</span><span class="why"><b>Pass:</b> the full dashboard renders in a private window.</span></span></label></li>
         <li><label class="chk"><input type="checkbox" id="s3-02"><span class="txt"><span class="t">It is unmistakably labelled as fictional</span><span class="why"><b>Pass:</b> a banner names "Northstar Services" as invented on the reserved <code class="mono">example.com</code> domain, and the response card says edits are not saved.</span></span></label></li>
-        <li><label class="chk"><input type="checkbox" id="s3-03"><span class="txt"><span class="t">Compare it against the original screenshot</span><span class="why">Open <code class="mono">docs/reference/seo-client-excuse-detector-reference.png</code> beside it. Confirm each intentional difference:</span></span></label>
+        <li><label class="chk"><input type="checkbox" id="s3-03"><span class="txt"><span class="t">Compare it against the original screenshot</span><span class="why">Open your own copy of the original reference screenshot beside it -- it is not shipped in this repository. Confirm each intentional difference:</span></span></label>
           <ul class="sub-checks">
             <li><label class="chk"><input type="checkbox" id="s3-03a"><span class="txt"><span class="t">No needle gauge and no "82%" &rarr; four labelled investigation areas with one marked "selected"</span></span></label></li>
             <li><label class="chk"><input type="checkbox" id="s3-03b"><span class="txt"><span class="t">"Evidence diagnosis" with a "Rule generated" badge, not "AI Diagnosis"</span></span></label></li>
@@ -247,7 +247,7 @@ npm run reset:password -- --email analyst@example.com --activate</pre></span></s
         <li><label class="chk gatechk"><input type="checkbox" id="s8-04"><span class="txt"><span class="t">Maintenance refuses to run without an explicit mode</span><span class="why"><b>Pass:</b> "Choose exactly one of --dry-run or --apply."<pre>npm run maintenance</pre></span></span></label></li>
         <li><label class="chk gatechk"><input type="checkbox" id="s8-05"><span class="txt"><span class="t">A near-miss on the typed client name is refused</span><span class="why"><b>Pass:</b> typing the name with different capitalisation deletes nothing. This is deliberate: a destructive confirmation should not be generous.</span></span></label></li>
         <li><label class="chk gatechk"><input type="checkbox" id="s8-06"><span class="txt"><span class="t"><span class="gatepill">GATE</span>Delete a test client for real, typing its name exactly</span><span class="why"><b>Pass:</b> the client and all its complaints, reports, analyses and drafts are gone. <b>Point of no return.</b></span></span></label></li>
-        <li><label class="chk gatechk"><input type="checkbox" id="s8-07"><span class="txt"><span class="t">Confirm nothing identifying survives in the audit trail</span><span class="why"><b>Pass:</b> the deletion event holds an id and a count, with no client name, domain or complaint text.<pre>docker exec excuse-detector-db psql -U excuse -d excuse_detector \
+        <li><label class="chk gatechk"><input type="checkbox" id="s8-07"><span class="txt"><span class="t">Confirm nothing identifying survives in the audit trail</span><span class="why"><b>Pass:</b> the deletion event holds an id and a count, with no client name, domain or complaint text.<pre>docker exec sightline-db psql -U excuse -d sightline \
   -c "select action, entity_id, metadata from audit_events where action='client.deleted';"</pre></span></span></label></li>
       </ul>
     </div>
@@ -266,14 +266,14 @@ npm run reset:password -- --email analyst@example.com --activate</pre></span></s
     </div>
   </section>
 
-  <p class="note">Checkbox state is saved in this browser and survives reloads. Open with <code class="mono">open docs/superpowers/plans/2026-09-07-seo-client-excuse-detector-runbook.html</code>. Automated evidence: <code class="mono">docs/verification.md</code>.</p>
+  <p class="note">Checkbox state is saved in this browser and survives reloads. Open with <code class="mono">open docs/superpowers/plans/2026-09-07-sightline-runbook.html</code>. Automated evidence: <code class="mono">docs/verification.md</code>.</p>
 
 </div>
 
 <script>
 (function(){
   /* CHANGE THIS to a unique key per runbook so pages don't share checkbox state. */
-  var KEY = 'seo-excuse-detector-release1-runbook-v1';
+  var KEY = 'sightline-release1-runbook-v1';
   var boxes = Array.prototype.slice.call(document.querySelectorAll('input[type=checkbox]'));
   var saved = {};
   try { saved = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch(e){ saved = {}; }

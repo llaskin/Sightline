@@ -1,4 +1,4 @@
-# SEO Client Excuse Detector Implementation Plan
+# Sightline Implementation Plan
 
 > **For agentic workers:** Use the available `executing-plans` skill to implement this plan task by task. If the user authorizes agent delegation, `subagent-driven-development` is an alternative. Steps use checkbox syntax for tracking. This document requests future implementation; it does not authorize this documentation session to build or deploy the application.
 
@@ -8,9 +8,9 @@
 
 **Tech stack:** TypeScript, Next.js App Router, React, Tailwind CSS, accessible Radix-based controls, Lucide, Recharts, Zod, Drizzle/PostgreSQL, Better Auth, Vitest, Playwright, axe, npm, Docker Compose.
 
-**Authoritative specification:** [Product and technical specification](../specs/2026-09-07-seo-client-excuse-detector-design.md). This plan builds release 1 only; direct Google APIs, AI narrative, billing, emails and arbitrary PDF parsing are separate phases.
+**Authoritative specification:** [Product and technical specification](../specs/2026-09-07-sightline-design.md). This plan builds release 1 only; direct Google APIs, AI narrative, billing, emails and arbitrary PDF parsing are separate phases.
 
-**Visual reference:** [User-supplied dashboard screenshot](../../reference/seo-client-excuse-detector-reference.png). This is a reference asset, not content to ship as the app UI.
+**Visual reference:** a user-supplied dashboard screenshot, held privately and not distributed with this repository. It was a reference asset, never content to ship as the app UI.
 
 ---
 
@@ -537,4 +537,4 @@ These phases require their own focused plans after release 1. They must reuse `N
 
 ## Suggested prompt for the implementing agent
 
-> Read `docs/superpowers/specs/2026-09-07-seo-client-excuse-detector-design.md` and this implementation plan completely. Implement release 1 in task order, preserving existing workspace work. Build the upload-first persistent application and recreate the supplied screenshot's dashboard hierarchy using the documented visual tokens. Follow the exact data contracts and diagnosis rules, including missing-data behavior, separate received-lead assessment, tenant isolation and immutable analysis history. Use fictional fixtures for the demo, but run real imports and persistence for authenticated workflows. Verify AC-01 through AC-24, record actual results in `docs/verification.md`, and deliver setup instructions. Do not substitute a static mockup for the working app or silently add live Google/model dependencies. Do not deploy or send external messages unless separately authorized.
+> Read `docs/superpowers/specs/2026-09-07-sightline-design.md` and this implementation plan completely. Implement release 1 in task order, preserving existing workspace work. Build the upload-first persistent application and recreate the supplied screenshot's dashboard hierarchy using the documented visual tokens. Follow the exact data contracts and diagnosis rules, including missing-data behavior, separate received-lead assessment, tenant isolation and immutable analysis history. Use fictional fixtures for the demo, but run real imports and persistence for authenticated workflows. Verify AC-01 through AC-24, record actual results in `docs/verification.md`, and deliver setup instructions. Do not substitute a static mockup for the working app or silently add live Google/model dependencies. Do not deploy or send external messages unless separately authorized.

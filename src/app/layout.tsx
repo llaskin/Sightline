@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'SEO Client Excuse Detector',
+  title: 'Sightline',
   description: 'SEO performance and lead-generation evidence for agency client conversations.',
 };
 

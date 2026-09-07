@@ -1,9 +1,9 @@
-# SEO Client Excuse Detector — Product and Technical Specification
+# Sightline — Product and Technical Specification
 
 Date: 2026-09-07  
 Status: Implementation handoff; product choices below are proposed defaults, not an assertion of the original app's internals.  
-Companion: [Implementation plan](../plans/2026-09-07-seo-client-excuse-detector.md)  
-Visual reference: [User-supplied dashboard screenshot](../../reference/seo-client-excuse-detector-reference.png)
+Companion: [Implementation plan](../plans/2026-09-07-sightline.md)  
+Visual reference: a user-supplied dashboard screenshot, held privately. It is not distributed with this repository, because it is third-party material containing an identifiable person. Every intentional departure from it is described in section 4.2 and recorded in `docs/verification.md`.
 
 ## 1. Objective and evidence boundary
 
@@ -24,7 +24,7 @@ The requested deliverable is this specification and its implementation plan. No 
 | AI expansion | Optional constrained narrative adapter after release 1 | Models may explain approved facts; they must not decide numerical truth |
 | Deployment | One Node application and PostgreSQL; container-ready | Small operational surface, persistent data, local development parity |
 | Accounts | Private agency workspaces; owner and analyst roles | Agencies must never see one another's clients |
-| Branding | Retain “SEO Client Excuse Detector” in the agency UI | Recognizable recreation; neutral language in client-facing responses |
+| Branding | Retain “Sightline” in the agency UI | Recognizable recreation; neutral language in client-facing responses |
 
 Alternatives considered: a screenshot-only prototype is quicker but cannot analyze real reports; Google integrations from launch reduce manual work but add OAuth, quotas, data reconciliation, and an instrumentation dependency before the workflow is validated. Upload-first is the recommended release sequence. These are assumptions the user can revise before implementation; neither companion document claims explicit approval of a technology vendor.
 

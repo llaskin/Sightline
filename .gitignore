@@ -58,3 +58,7 @@ tests/e2e/.auth/
 
 # Regenerable knowledge graph (graphify update .)
 graphify-out/
+
+# The design reference is third-party material containing an identifiable
+# person. It stays local and is never distributed with this repository.
+/docs/reference/

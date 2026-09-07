@@ -6,7 +6,7 @@ import { HistoryTable, type AnalysisRow } from '@/features/history/history-table
 
 export const dynamic = 'force-dynamic';
 
-export const metadata = { title: 'Analysis history - SEO Client Excuse Detector' };
+export const metadata = { title: 'Analysis history - Sightline' };
 
 const PAGE_SIZE = 25;
 

@@ -40,12 +40,10 @@ export function AppShell({
           className="mb-5 flex items-center gap-3 rounded-[10px] px-1 py-1 xl:px-2"
         >
           <BrandMark />
-          <span className="hidden text-[17px] font-semibold leading-tight text-ink xl:block">
-            SEO Client
-            <br />
-            Excuse Detector
+          <span className="hidden text-[18px] font-semibold leading-tight text-ink xl:block">
+            Sightline
           </span>
-          <span className="sr-only xl:hidden">SEO Client Excuse Detector</span>
+          <span className="sr-only xl:hidden">Sightline</span>
         </Link>
 
         <div className="hidden xl:block">
@@ -56,7 +54,7 @@ export function AppShell({
         </div>
 
         <div className="mt-auto flex flex-col gap-3">
-          <DetectivePanel />
+          <EvidencePanel />
           <UserPanel user={user} />
         </div>
       </aside>
@@ -65,7 +63,7 @@ export function AppShell({
       <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-line bg-sidebar px-4 py-3 lg:hidden">
         <Link href="/dashboard" className="flex items-center gap-2">
           <BrandMark size={28} />
-          <span className="text-[15px] font-semibold text-ink">Excuse Detector</span>
+          <span className="text-[15px] font-semibold text-ink">Sightline</span>
         </Link>
         <Button
           variant="secondary"
@@ -108,7 +106,7 @@ export function AppShell({
 }
 
 /** A simple drawn panel. Deliberately not a person, and not a portrait. */
-function DetectivePanel() {
+function EvidencePanel() {
   return (
     <div className="hidden rounded-[12px] border border-line bg-accent-soft p-4 xl:block">
       <p className="text-[13px] leading-relaxed text-ink">

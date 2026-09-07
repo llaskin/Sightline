@@ -23,7 +23,7 @@ import { SponsorBanner } from '@/components/sponsor-banner';
 export const dynamic = 'force-static';
 
 export const metadata = {
-  title: 'Demo - SEO Client Excuse Detector',
+  title: 'Demo - Sightline',
   description: 'A read-only demonstration using clearly fictional sample data.',
 };
 

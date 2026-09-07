@@ -25,7 +25,7 @@ CRM, no email sender, no model provider. Those are later phases.
 |---|---|---|
 | `DATABASE_URL` | yes | Application database. |
 | `BETTER_AUTH_SECRET` | yes | Session signing secret, at least 32 characters. Generate with `openssl rand -base64 32`. |
-| `BETTER_AUTH_URL` | yes | Public base URL, e.g. `https://excuse-detector.example.com`. |
+| `BETTER_AUTH_URL` | yes | Public base URL, e.g. `https://sightline.example.com`. |
 | `APP_ORIGIN` | yes | Origin allowed to send state-changing requests. Normally identical to `BETTER_AUTH_URL`. |
 | `NODE_ENV` | yes | `production`. This enables secure cookies and refuses demo seeding. |
 | `TEST_DATABASE_URL` | no | CI only. Must never point at production. |
@@ -144,7 +144,7 @@ or equals `TEST_DATABASE_URL`.
 crontab example:
 
 ```
-17 3 * * * cd /srv/excuse-detector && /usr/bin/npm run maintenance -- --apply >> /var/log/excuse-detector-maintenance.log 2>&1
+17 3 * * * cd /srv/sightline && /usr/bin/npm run maintenance -- --apply >> /var/log/sightline-maintenance.log 2>&1
 ```
 
 ## Retention and deletion

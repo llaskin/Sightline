@@ -373,7 +373,11 @@ describe('error responses', () => {
       expect(serialised).not.toMatch(/postgres:\/\//);
       expect(serialised).not.toContain('node_modules');
       expect(serialised).not.toContain('at async');
-      expect(serialised).not.toContain('excuse_local_dev');
+      // The password actually in use, not a literal that a rename could
+      // quietly detach from reality.
+      const password = new URL(process.env.TEST_DATABASE_URL!).password;
+      expect(password.length).toBeGreaterThan(0);
+      expect(serialised).not.toContain(password);
       // A request id is present for support without exposing internals.
       expect(response.body.requestId).toBeTruthy();
     }

@@ -10,8 +10,6 @@ import {
   Users,
   FileText,
   Settings,
-  Search,
-  LineChart,
 } from 'lucide-react';
 
 /**
@@ -31,19 +29,36 @@ export const NAV_ITEMS = [
 ] as const;
 
 /** A new mark, not a reproduction of the screenshot's icon. */
+/**
+ * The Sightline mark: scattered evidence resolving into one straight line.
+ *
+ * Kept in sync with src/app/icon.svg and public/brand/sightline-master.svg. It
+ * is drawn inline rather than loaded as an image so it stays crisp at every
+ * size and needs no network request in the shell.
+ */
 export function BrandMark({ size = 34 }: { size?: number }) {
   return (
     <span
       aria-hidden
-      className="relative inline-flex shrink-0 items-center justify-center rounded-[10px] border border-line-strong bg-surface-raised"
+      className="inline-flex shrink-0 items-center justify-center rounded-[10px] border border-line-strong bg-surface-raised"
       style={{ width: size, height: size }}
     >
-      <Search size={size * 0.55} className="text-[#a99bff]" strokeWidth={2.2} />
-      <LineChart
-        size={size * 0.3}
-        className="absolute bottom-1 right-1 text-positive"
-        strokeWidth={2.6}
-      />
+      <svg
+        viewBox="0 0 100 100"
+        width={size * 0.72}
+        height={size * 0.72}
+        focusable="false"
+        aria-hidden
+      >
+        <g fill="#a99bff">
+          <circle cx="15" cy="32" r="5" />
+          <circle cx="15" cy="68" r="5" />
+          <circle cx="28" cy="42" r="4.5" />
+          <circle cx="28" cy="58" r="4.5" />
+        </g>
+        <circle cx="40" cy="50" r="4" fill="#5940e8" />
+        <rect x="47" y="45" width="43" height="10" rx="5" fill="#5940e8" />
+      </svg>
     </span>
   );
 }

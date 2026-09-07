@@ -1,6 +1,6 @@
 # Setup
 
-Local development setup for the SEO Client Excuse Detector.
+Local development setup for the Sightline.
 
 ## Prerequisites
 
@@ -51,7 +51,7 @@ data volume. `docker compose down -v` also destroys the data.
 |---|---|
 | 3100 | `npm run dev` / `npm run start` |
 | 3110 | Playwright's production server during `npm run test:e2e` |
-| 5433 | PostgreSQL: `excuse_detector` (development), `excuse_detector_test` (integration), `excuse_detector_e2e` (browser) |
+| 5433 | PostgreSQL: `sightline` (development), `sightline_test` (integration), `sightline_e2e` (browser) |
 
 ## Environment variables
 
