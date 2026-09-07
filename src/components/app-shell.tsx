@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Menu, X, LogOut } from 'lucide-react';
 import { BrandMark, NavList } from './navigation';
 import { Button } from './ui/button';
+import { SponsorBanner } from '@/components/sponsor-banner';
 
 /**
  * Responsive application shell.
@@ -94,6 +95,14 @@ export function AppShell({
           {children}
         </div>
       </main>
+
+      {/* Outside <main> on purpose: a <footer> nested inside main, article,
+          aside, nav or section is not a contentinfo landmark, so it would not
+          be announced as the page footer. The offset matches main's, so it
+          clears the fixed sidebar at every width. */}
+      <div className="lg:pl-[76px] xl:pl-[288px]">
+        <SponsorBanner />
+      </div>
     </div>
   );
 }

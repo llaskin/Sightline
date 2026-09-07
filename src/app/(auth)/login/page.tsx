@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import { LoginForm } from '@/features/auth/login-form';
 import { BrandMark } from '@/components/navigation';
+import { SponsorBanner } from '@/components/sponsor-banner';
 
 export const dynamic = 'force-dynamic';
 
@@ -8,7 +9,8 @@ export const metadata = { title: 'Sign in - SEO Client Excuse Detector' };
 
 export default function LoginPage() {
   return (
-    <main className="flex min-h-dvh items-center justify-center px-4 py-10">
+    <div className="flex min-h-dvh flex-col">
+      <main className="flex flex-1 items-center justify-center px-4 py-10">
       <div className="w-full max-w-[400px]">
         <div className="mb-6 flex items-center gap-3">
           <BrandMark />
@@ -27,7 +29,9 @@ export default function LoginPage() {
           Accounts are created by an operator. There is no public sign-up and no self-service
           password reset in this release; ask your workspace owner if you need access.
         </p>
-      </div>
-    </main>
+        </div>
+      </main>
+      <SponsorBanner />
+    </div>
   );
 }

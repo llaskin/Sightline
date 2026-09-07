@@ -1,5 +1,7 @@
 # SEO Client Excuse Detector
 
+**Sponsored by [AI Find My Business](https://www.aifindmybusiness.com)**
+
 An agency application that compares a client's complaint against search,
 website and lead evidence, identifies the most plausible area to investigate,
 and drafts a respectful, editable response.
@@ -43,9 +45,16 @@ provider key are needed.
 ## Quick start
 
 ```bash
+git clone https://github.com/<owner>/seo-client-excuse-detector.git
+cd seo-client-excuse-detector
+
 npm ci
 docker compose up -d                 # PostgreSQL 16 on port 5433
-cp .env.example .env.local           # then set BETTER_AUTH_SECRET
+cp .env.example .env.local
+
+# Set a real session secret in .env.local:
+openssl rand -base64 32              # paste the output into BETTER_AUTH_SECRET
+
 npm run db:migrate
 
 NEW_PASSWORD='choose-a-long-password' \
@@ -122,6 +131,32 @@ npm run test:e2e           # browser and accessibility (needs: npx playwright in
 
 There is no public sign-up and no self-service password recovery in this
 release. An operator provisions accounts through the CLI.
+
+## Licence and sponsorship
+
+This project is sponsored by
+**[AI Find My Business](https://www.aifindmybusiness.com)** and is released
+under the **GNU Affero General Public License v3.0**, with additional terms
+under section 7 of that licence. See [LICENSE](LICENSE) for the full text.
+
+You may use, study, modify, redistribute and host it, including commercially.
+Three conditions come with that:
+
+1. **The sponsorship credit stays visible.** Every interface of this program
+   displays a footer carrying the copyright notice, the no-warranty statement, a
+   link to the licence, and `Sponsored by AI Find My Business`. Together those
+   are the "Appropriate Legal Notices" that AGPL section 0 defines. Under
+   section 7(b) the attribution must be preserved in that footer in any work
+   based on this one. You may restyle it; you may not remove or hide it.
+2. **Network use means publishing source.** AGPL section 13 applies: if you let
+   users interact with a modified version over a network, you must offer them
+   its source. Set `NEXT_PUBLIC_SOURCE_URL` to your public repository before you
+   deploy, and the footer will show a `Source` link.
+3. **Modified versions must be marked as different**, and the licence grants no
+   rights in the AI Find My Business name or marks.
+
+Removing the attribution is not a style choice; under AGPL section 8 it
+terminates your rights under the licence.
 
 ## Deferred to later phases
 

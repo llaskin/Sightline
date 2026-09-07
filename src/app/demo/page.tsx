@@ -11,6 +11,7 @@ import { makeDemoComplaint } from '@/domain/fixtures/demo-complaint';
 import { buildDashboardViewModel } from '@/features/dashboard/view-model';
 import { Dashboard } from '@/features/dashboard/dashboard';
 import { BrandMark } from '@/components/navigation';
+import { SponsorBanner } from '@/components/sponsor-banner';
 
 /**
  * The public demo.
@@ -83,6 +84,7 @@ export default function DemoPage() {
 
         <Dashboard view={view} analysisId="demo" readOnly />
       </div>
+      <SponsorBanner />
     </div>
   );
 }
