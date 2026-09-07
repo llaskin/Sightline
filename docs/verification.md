@@ -24,16 +24,18 @@ reset and reseeded per run).
 
 Run on 2026-09-07. Every command exited 0.
 
+Final run on commit `aaee830` with a clean working tree (0 modified files).
+
 | Command | Started | Finished | Result |
 |---|---|---|---|
-| `npm run lint` | 15:17:22 | 15:17:26 | exit 0, no errors, no warnings |
-| `npm run typecheck` | 15:17:26 | 15:17:27 | exit 0 |
-| `npm run test:unit` | 15:17:27 | 15:17:28 | **219 passed / 219** |
-| `npm run test:integration` | 15:17:28 | 15:18:02 | **124 passed / 124** |
-| `npm run build` | 15:18:02 | 15:18:07 | exit 0, 38 routes |
-| `npm run test:e2e` | 15:18:07 | 15:18:34 | **42 passed / 42** |
+| `npm run lint` | 15:55:03 | 15:55:06 | exit 0, no errors, no warnings |
+| `npm run typecheck` | 15:55:06 | 15:55:08 | exit 0 |
+| `npm run test:unit` | 15:55:08 | 15:55:09 | **219 passed / 219** |
+| `npm run test:integration` | 15:55:09 | 15:55:41 | **124 passed / 124** |
+| `npm run build` | 15:55:41 | 15:55:46 | exit 0, 38 routes |
+| `npm run test:e2e` | 15:55:46 | 15:56:14 | **46 passed / 46** |
 
-**385 tests total.** Unit tests run with no database, no network and no model
+**389 tests total.** Unit tests run with no database, no network and no model
 key present. Integration tests run against real PostgreSQL. Browser tests run
 against the production build with a real database.
 
@@ -61,9 +63,10 @@ against the production build with a real database.
 | `tests/integration/retention.test.ts` | 20 | Retention cutoffs, client deletion |
 | `tests/integration/security-boundaries.test.ts` | 14 | 401/403/404 matrix, origin, bounds |
 | `tests/e2e/import-workflow.spec.ts` | 4 | Full browser import journey |
-| `tests/e2e/analysis-workflow.spec.ts` | 6 | Diagnosis, drawers, export, reanalysis |
+| `tests/e2e/analysis-workflow.spec.ts` | 7 | Diagnosis, drawers, export, reanalysis, client switching |
 | `tests/e2e/response-conflict.spec.ts` | 4 | Concurrent editing, clipboard fallback |
 | `tests/e2e/navigation-and-states.spec.ts` | 8 | Every destination, empty and failure states |
+| `tests/e2e/client-deletion.spec.ts` | 3 | Typed-name confirmation, near miss, owner-only |
 | `tests/e2e/accessibility.spec.ts` | 12 | axe scans, keyboard, focus, reduced motion |
 | `tests/e2e/responsive.spec.ts` | 8 | Five viewports, overflow, reflow |
 
@@ -210,7 +213,7 @@ The `_test` database guard was observed refusing to run twice: once with
 | AC-18 | Rule upgrade or report correction | **pass** | `integration/analysis-workflow.test.ts` "AC-18" (3 cases); `integration/import-commit.test.ts` corrections |
 | AC-19 | Trend rows and page subset | **pass** | `unit/dashboard-view-model.test.ts` "AC-17 and AC-19"; `e2e/navigation-and-states.spec.ts` sparse report |
 | AC-20 | No model key or network | **pass** | Whole unit suite runs offline with no provider key; clean-setup rehearsal below |
-| AC-21 | Retention and client deletion | **pass** | `integration/retention.test.ts` (20 cases) |
+| AC-21 | Retention and client deletion | **pass** | `integration/retention.test.ts` (20 cases); `e2e/client-deletion.spec.ts` (3 cases, through the interface) |
 | AC-22 | All-channel form on organic complaint | **pass** | `unit/analysis.test.ts` "AC-22" (2 cases) |
 | AC-23 | Complaint period differs from report | **pass** | `unit/complaint-assessment.test.ts` "AC-23" (3 cases) |
 | AC-24 | Baseline ≥20 leads, current zero | **pass** | `unit/analysis.test.ts` "AC-24" (2 cases) |
@@ -253,6 +256,27 @@ loosening.
 11. **A clipboard fallback used a zero-delay timer** to select the textarea,
     which only wins the race against React's re-render most of the time. Now a
     deterministic effect.
+12. **Permanent client deletion had no way to reach it.** `DELETE
+    /api/clients/:id` was implemented and covered by integration tests, but the
+    client page told the owner deletion was "not available in this release", and
+    runbook steps 8-05 and 8-06 asked for something the interface could not do.
+    The integration tests called the API directly, so nothing failed. Fixed with
+    an owner-only typed-name confirmation panel and three browser tests.
+13. **The client selector was written but never rendered.** Once a client had a
+    saved analysis the dashboard redirected to `/analyses/:id`, which had no
+    client control, so moving between clients meant going through the Clients
+    page. The analysis page also never named the client: `clientName` reached
+    the view model and stopped there. Both fixed, with a browser test that
+    switches client and follows the URL.
+14. **`npm run test:e2e` serves the previous build.** It runs `npm run start`
+    with no build step, so after a source change the browser suite silently
+    exercises stale output -- it can pass while the change is broken, or fail
+    while it is fixed. This was hit while verifying defect 12. Not a code change:
+    recorded in `docs/setup.md` as a prerequisite.
+15. **The browser sign-in cache covered only the owner.** Adding a second
+    analyst test tripped the auth rate limit, and the failure surfaced 30 seconds
+    later as a navigation timeout that read like an application bug. Each account
+    now caches its own cookies, which is what the owner path already did.
 
 ## Clean-setup rehearsal
 
@@ -269,6 +293,12 @@ Performed in this checkout with the database reset:
 | `npm run maintenance -- --dry-run` | Reported counts, changed nothing |
 | `npm run maintenance` with no mode | Refused: "Choose exactly one of --dry-run or --apply." |
 | Sign in and use the app | Verified in a browser; all 17 routes render |
+
+Repeated afterwards in a **separate temporary checkout** (`git clone` of this
+repository, outside the working tree) to prove nothing on disk but uncommitted
+is load-bearing: `npm ci` exit 0, `cp .env.example .env.local` succeeded,
+`npm run build` exit 0 with 38 routes, `npm run test:unit` 219 passed. The
+checkout was then deleted.
 
 **No Google credentials and no AI provider key were present at any point.** The
 diagnosis and the response draft are produced entirely by local deterministic
@@ -287,6 +317,10 @@ code (AC-20).
   and the standalone output it depends on is produced by `npm run build`, but no
   image was built here, so that path is unverified.
 - **No deployment.** Nothing was deployed, published or sent anywhere.
+- **All work is committed on `main`.** The project convention is a
+  `feat/<slug>` branch. This repository was initialised empty for this release,
+  so there was no branch to merge back into and no parallel session to isolate
+  from, but the convention was not followed and nothing has been pushed.
 - **The CI workflow has not run.** `.github/workflows/ci.yml` is committed but
   no push has occurred, so it is unexecuted.
 - **`npm audit` reports 4 moderate advisories**, all via
