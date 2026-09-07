@@ -1,5 +1,6 @@
 import { getAuth } from '@/server/auth';
 import { provisionUser } from '@/server/provisioning';
+import { TEST_ORIGIN } from './origin';
 
 /**
  * Provisions real users and signs them in through the real auth library, so
@@ -74,7 +75,7 @@ export async function signIn(email: string, password: string): Promise<Headers> 
 /** Headers for a mutating request from the trusted application origin. */
 export function mutating(user: TestUser): Headers {
   const headers = new Headers(user.headers);
-  headers.set('origin', process.env.APP_ORIGIN ?? 'http://localhost:3100');
+  headers.set('origin', TEST_ORIGIN);
   headers.set('content-type', 'application/json');
   return headers;
 }

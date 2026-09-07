@@ -7,6 +7,7 @@ import { resetDatabase, closeDatabase } from '../helpers/database';
 import { createWorkspaceWithOwner, type TestUser } from '../helpers/auth';
 import { call } from '../helpers/api';
 import { seedReportAndComplaint } from '../helpers/scenario';
+import { TEST_ORIGIN } from '../helpers/origin';
 
 beforeEach(async () => {
   await resetDatabase();
@@ -22,7 +23,7 @@ async function raw(
   options: { path: string; user: TestUser | null; params: Record<string, string> },
 ) {
   const headers = new Headers(options.user ? options.user.headers : undefined);
-  const request = new Request(`http://localhost:3100${options.path}`, { headers });
+  const request = new Request(`${TEST_ORIGIN}${options.path}`, { headers });
   const response = await handler(request, {
     params: Promise.resolve(options.params),
   } as never);

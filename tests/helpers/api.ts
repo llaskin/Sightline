@@ -1,12 +1,11 @@
 import type { TestUser } from './auth';
+import { TEST_ORIGIN } from './origin';
 
 /**
  * Calls real route handlers with real Request objects, so tests exercise the
  * actual membership check, same-origin check, validation and envelope rather
  * than a mocked repository.
  */
-
-const ORIGIN = 'http://localhost:3100';
 
 export type ApiResponse<T = unknown> = {
   status: number;
@@ -26,7 +25,7 @@ async function read<T>(response: Response): Promise<ApiResponse<T>> {
 function headersFor(user: TestUser | null, mutating: boolean): Headers {
   const headers = new Headers(user ? user.headers : undefined);
   if (mutating) {
-    headers.set('origin', ORIGIN);
+    headers.set('origin', TEST_ORIGIN);
     headers.set('content-type', 'application/json');
   }
   return headers;
@@ -55,7 +54,7 @@ export async function call<T = unknown>(
   else if (typeof options.origin === 'string') headers.set('origin', options.origin);
   for (const [key, value] of Object.entries(options.headers ?? {})) headers.set(key, value);
 
-  const request = new Request(`${ORIGIN}${options.path}`, {
+  const request = new Request(`${TEST_ORIGIN}${options.path}`, {
     method,
     headers,
     body: options.body === undefined ? undefined : JSON.stringify(options.body),

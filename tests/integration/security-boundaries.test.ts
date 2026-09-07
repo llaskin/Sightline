@@ -20,6 +20,7 @@ import { addAnalyst, createWorkspaceWithOwner, type TestUser } from '../helpers/
 import { call } from '../helpers/api';
 import { seedReportAndComplaint } from '../helpers/scenario';
 import { clients as clientsTable } from '@/server/db/schema';
+import { TEST_ORIGIN } from '../helpers/origin';
 
 beforeEach(async () => {
   await resetDatabase();
@@ -29,7 +30,7 @@ afterAll(async () => {
   await closeDatabase();
 });
 
-const ORIGIN = 'http://localhost:3100';
+const ORIGIN = TEST_ORIGIN;
 
 type Handler = (request: Request, context: never) => Promise<Response>;
 
