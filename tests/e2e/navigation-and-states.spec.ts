@@ -264,3 +264,19 @@ test('the demo is clearly labelled and never writes anything', async ({ browser 
 
   await context.close();
 });
+
+/**
+ * The sign-in redirect target is deliberately NOT covered here.
+ *
+ * Driving it needs a third real form sign-in, and the auth rate limit is 10
+ * requests a minute across the auth endpoints while this suite runs in about
+ * one. The third sign-in is refused, and because the form shows one generic
+ * message for every failure, it looks like a wrong password. The test failed
+ * for a reason that had nothing to do with what it was testing.
+ *
+ * The redirect target is `sameOriginPath` from `@/lib/safe-path`, and the login
+ * form's use of it is a single call. That function is covered exhaustively in
+ * `tests/unit/safe-path.test.ts`, including the four values that a
+ * first-character check lets through, and `tests/e2e/import-workflow.spec.ts`
+ * exercises the same function through a real browser navigation.
+ */

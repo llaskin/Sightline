@@ -1,4 +1,5 @@
 import { pageMembership } from '@/server/page-data';
+import { sameOriginPath } from '@/lib/safe-path';
 import { clientDefinitionsSchema, listClients } from '@/server/repositories/clients';
 import { findDraft, toDraftView } from '@/server/repositories/imports';
 import { findReport } from '@/server/repositories/reports';
@@ -29,12 +30,10 @@ export default async function NewReportPage({
   const { clientId, draftId, supersedes, returnTo } = await searchParams;
 
   // Where to go after a successful commit, when another screen sent the reader
-  // here. Sanitised on the server so a hostile value never reaches the client:
-  // one leading slash only, which rules out both an absolute URL and the
-  // protocol-relative "//host" form. Anything else is dropped rather than
-  // corrected, and the wizard falls back to the new report.
-  const returnPath =
-    returnTo && returnTo.startsWith('/') && !returnTo.startsWith('//') ? returnTo : null;
+  // here. Sanitised on the server, so a hostile value never reaches the client;
+  // anything that is not a same-origin path is dropped rather than corrected,
+  // and the wizard falls back to the new report.
+  const returnPath = sameOriginPath(returnTo);
 
   const clientPage = await listClients(membership, { limit: 100, cursor: null });
   const clients: WizardClient[] = clientPage.items.map((row) => {

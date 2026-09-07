@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { TextField } from '@/components/ui/fields';
 import { Button } from '@/components/ui/button';
 import { ErrorState } from '@/components/ui/primitives';
+import { sameOriginPath } from '@/lib/safe-path';
 
 /**
  * Sign-in.
@@ -14,14 +15,6 @@ import { ErrorState } from '@/components/ui/primitives';
  * addresses have accounts.
  */
 const GENERIC_FAILURE = 'That email address and password combination was not recognised.';
-
-/** Only a same-origin application path is ever followed after sign-in. */
-function safeReturnPath(raw: string | null): string {
-  if (!raw) return '/dashboard';
-  // A protocol-relative or absolute URL could send the user to another site.
-  if (!raw.startsWith('/') || raw.startsWith('//')) return '/dashboard';
-  return raw;
-}
 
 export function LoginForm() {
   const router = useRouter();
@@ -48,7 +41,8 @@ export function LoginForm() {
         setPending(false);
         return;
       }
-      router.push(safeReturnPath(searchParams.get('next')));
+      // Only a same-origin application path is ever followed after sign-in.
+      router.push(sameOriginPath(searchParams.get('next')) ?? '/dashboard');
       router.refresh();
     } catch {
       setError('Sign-in could not be completed. Check your connection and try again.');

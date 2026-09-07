@@ -276,13 +276,12 @@ test('an import started from an analysis returns to where it began', async ({ pa
   expect(page.url()).toContain(client.id);
 });
 
-test('a returnTo pointing off-site is ignored', async ({ page }) => {
-  await signIn(page);
+/** A validated draft for this client, built through the API. */
+async function validatedDraft(page: import('@playwright/test').Page, clientName: string) {
   const { makeDemoReport } = await import('../../src/domain/fixtures/demo-report');
   const report = makeDemoReport();
-
   const client = await api<{ id: string }>(page, 'POST', '/api/clients', {
-    name: 'Hostile Return Client',
+    name: clientName,
     domain: 'example.com',
     timeZone: 'America/New_York',
   });
@@ -301,15 +300,34 @@ test('a returnTo pointing off-site is ignored', async ({ page }) => {
   await api(page, 'POST', `/api/imports/${draft.id}/validate`, {
     expectedRevision: saved.revision,
   });
+  return { clientId: client.id, draftId: draft.id };
+}
 
-  // An absolute URL must not become a redirect target just because it arrived
-  // in the query string. Committing goes to the report, as if no returnTo had
-  // been supplied at all.
-  const hostile = encodeURIComponent('https://example.net/steal');
-  await page.goto(`/reports/new?draftId=${draft.id}&returnTo=${hostile}`);
-  await page.getByRole('button', { name: '5. Commit' }).click();
-  await page.getByRole('button', { name: 'Commit report' }).click();
+/**
+ * Every one of these resolves to http://example.net/steal when the browser
+ * parses it against the current page, even though each begins with a single
+ * forward slash. A string test on the first characters is not enough: the URL
+ * parser treats a backslash as a slash for http(s), and strips tabs and
+ * newlines before parsing.
+ */
+const HOSTILE_RETURNS = [
+  'https://example.net/steal',
+  '//example.net/steal',
+  '/\\example.net/steal',
+  '/\t/example.net/steal',
+];
 
-  await page.waitForURL(/\/reports\/[0-9a-f-]{36}/, { timeout: 30_000 });
-  expect(page.url()).not.toContain('example.net');
+test('a returnTo pointing off-site is ignored', async ({ page }) => {
+  await signIn(page);
+
+  for (const [index, hostile] of HOSTILE_RETURNS.entries()) {
+    const { draftId } = await validatedDraft(page, `Hostile Return Client ${index}`);
+    await page.goto(`/reports/new?draftId=${draftId}&returnTo=${encodeURIComponent(hostile)}`);
+    await page.getByRole('button', { name: '5. Commit' }).click();
+    await page.getByRole('button', { name: 'Commit report' }).click();
+
+    // Committing goes to the new report, as if no returnTo had been supplied.
+    await page.waitForURL(/\/reports\/[0-9a-f-]{36}/, { timeout: 30_000 });
+    expect(page.url(), `${hostile} must not become a redirect target`).not.toContain('example.net');
+  }
 });
