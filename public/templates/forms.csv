@@ -1,0 +1,3 @@
+period,form_id,scope,attempts,failed_attempts,error_events
+baseline,contact,organic_search,200,5,5
+current,contact,organic_search,220,15,15
