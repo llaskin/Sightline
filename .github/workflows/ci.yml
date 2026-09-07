@@ -1,0 +1,92 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+# There is deliberately no deploy job. Publishing anywhere is a separate,
+# explicitly authorised decision.
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: excuse
+          POSTGRES_PASSWORD: ci
+          POSTGRES_DB: excuse_detector_ci
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U excuse"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+    env:
+      # The integration suite truncates every table, so it is pointed at a
+      # database whose name ends in _test and never at the development one.
+      DATABASE_URL: postgres://excuse:ci@localhost:5432/excuse_detector_ci
+      TEST_DATABASE_URL: postgres://excuse:ci@localhost:5432/excuse_detector_test
+      BETTER_AUTH_SECRET: ci-only-secret-value-at-least-32-characters
+      BETTER_AUTH_URL: http://127.0.0.1:3110
+      APP_ORIGIN: http://127.0.0.1:3110
+      E2E_PORT: '3110'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Create the isolated test database
+        run: |
+          PGPASSWORD=ci psql -h localhost -U excuse -d excuse_detector_ci \
+            -c "CREATE DATABASE excuse_detector_test OWNER excuse;"
+
+      - run: npm run lint
+      - run: npm run typecheck
+
+      - name: Unit tests
+        run: |
+          date -u '+%Y-%m-%dT%H:%M:%SZ started'
+          npm run test:unit
+          date -u '+%Y-%m-%dT%H:%M:%SZ finished'
+
+      - name: Integration tests
+        run: |
+          date -u '+%Y-%m-%dT%H:%M:%SZ started'
+          npm run test:integration
+          date -u '+%Y-%m-%dT%H:%M:%SZ finished'
+
+      - run: npm run build
+
+      - name: Install browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Browser and accessibility tests
+        run: |
+          date -u '+%Y-%m-%dT%H:%M:%SZ started'
+          npm run test:e2e
+          date -u '+%Y-%m-%dT%H:%M:%SZ finished'
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
