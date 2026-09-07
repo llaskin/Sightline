@@ -1,4 +1,6 @@
-import { route, ok, readJson } from '@/server/http';
+import { z } from 'zod';
+import { route, ok, noContent, readJson } from '@/server/http';
+import { deleteClient } from '@/server/services/delete-client';
 import { requireOwner } from '@/server/require-membership';
 import {
   getClientOrThrow,
@@ -30,5 +32,19 @@ export async function PATCH(request: Request, context: Params) {
     if (input.archived !== undefined) requireOwner(membership);
     void existing;
     return ok(toClientView(await updateClient(membership, id, input)));
+  })(request, undefined as never);
+}
+
+const deleteSchema = z.object({
+  /** Must match the client's name exactly. Deletion is irreversible. */
+  confirmName: z.string(),
+});
+
+export async function DELETE(request: Request, context: Params) {
+  const { id } = await context.params;
+  return route(async (membership, req) => {
+    const { confirmName } = deleteSchema.parse(await readJson(req));
+    await deleteClient(membership, id, confirmName);
+    return noContent();
   })(request, undefined as never);
 }
