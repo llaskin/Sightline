@@ -205,3 +205,22 @@ test('an insufficient-evidence analysis is saved and names what is missing', asy
   const body = await page.evaluate(() => document.body.innerText.toLowerCase());
   expect(body).not.toContain('no clear issue');
 });
+
+test('the client selector moves between clients without losing the page', async ({ page }) => {
+  await signIn(page);
+  const first = await seedAnalysis(page, 'Switch Client A');
+  const second = await seedAnalysis(page, 'Switch Client B');
+
+  await page.goto(`/analyses/${first.analysisId}`);
+  // The header names the client, so the page is never ambiguous about whose
+  // figures these are.
+  await expect(page.getByText(/Switch Client A . SEO performance/)).toBeVisible();
+  await expect(page.getByLabel('Choose a client')).toHaveValue(first.clientId);
+
+  // Choosing another client lands on that client's most recent saved analysis,
+  // not on a blank dashboard.
+  await page.getByLabel('Choose a client').selectOption(second.clientId);
+  await page.waitForURL(new RegExp(second.analysisId), { timeout: 20_000 });
+  await expect(page.getByLabel('Choose a client')).toHaveValue(second.clientId);
+  await expect(page.getByText(/Switch Client B . SEO performance/)).toBeVisible();
+});

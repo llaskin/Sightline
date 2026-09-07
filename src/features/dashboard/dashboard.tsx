@@ -37,8 +37,10 @@ export function Dashboard({
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-[28px] font-semibold leading-tight text-ink">Dashboard</h1>
+          {/* The client is named here so the page never leaves a reader
+              guessing whose figures they are looking at. */}
           <p className="mt-1 text-[13px] text-ink-muted">
-            SEO performance and lead-generation evidence
+            {view.clientName} &middot; SEO performance and lead-generation evidence
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">

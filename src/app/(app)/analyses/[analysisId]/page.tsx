@@ -1,12 +1,12 @@
 import { notFound } from 'next/navigation';
-import { desc, eq, and } from 'drizzle-orm';
+import { asc, desc, eq, and, isNull } from 'drizzle-orm';
 import { pageMembership } from '@/server/page-data';
 import { findAnalysisDetail } from '@/server/repositories/analyses';
 import { getDb } from '@/server/db/client';
-import { analyses, reports } from '@/server/db/schema';
+import { analyses, clients, reports } from '@/server/db/schema';
 import { buildDashboardViewModel } from '@/features/dashboard/view-model';
 import { Dashboard } from '@/features/dashboard/dashboard';
-import { AnalysisSelector } from '@/features/dashboard/report-selector';
+import { AnalysisSelector, ClientSelector } from '@/features/dashboard/report-selector';
 import { normalizedReportSchema } from '@/domain/report-schema';
 import { complaintInputSchema } from '@/domain/complaint-schema';
 import { analysisResultSchema } from '@/domain/analysis-schema';
@@ -42,6 +42,20 @@ export default async function AnalysisPage({
     now: new Date(),
   });
 
+  // The workspace's clients, so the header can move between them. An archived
+  // client is not offered, but the one being read is always present even if it
+  // was archived after this analysis was saved -- otherwise the control would
+  // silently display someone else's name.
+  const clientRows = await getDb()
+    .select({ id: clients.id, name: clients.name })
+    .from(clients)
+    .where(and(eq(clients.workspaceId, membership.workspaceId), isNull(clients.archivedAt)))
+    .orderBy(asc(clients.name))
+    .limit(50);
+  const clientOptions = clientRows.some((row) => row.id === detail.client.id)
+    ? clientRows
+    : [{ id: detail.client.id, name: detail.client.name }, ...clientRows];
+
   const siblings = await getDb()
     .select({
       id: analyses.id,
@@ -67,13 +81,18 @@ export default async function AnalysisPage({
       view={view}
       analysisId={analysisId}
       selector={
-        <AnalysisSelector
-          currentId={analysisId}
-          analyses={siblings.map((row) => ({
-            id: row.id,
-            label: `${row.reportLabel} - analysed ${formatDate(row.createdAt.toISOString().slice(0, 10))}`,
-          }))}
-        />
+        <>
+          {clientOptions.length > 1 ? (
+            <ClientSelector clients={clientOptions} currentId={detail.client.id} />
+          ) : null}
+          <AnalysisSelector
+            currentId={analysisId}
+            analyses={siblings.map((row) => ({
+              id: row.id,
+              label: `${row.reportLabel} - analysed ${formatDate(row.createdAt.toISOString().slice(0, 10))}`,
+            }))}
+          />
+        </>
       }
     />
   );
