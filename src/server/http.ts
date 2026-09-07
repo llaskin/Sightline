@@ -73,6 +73,11 @@ export function created<T>(data: T): NextResponse {
   return ok(data, 201);
 }
 
+/** An idempotent replay: 200 with `replayed: true` beside the original result. */
+export function replayed<T>(data: T): NextResponse {
+  return NextResponse.json({ data, replayed: true, requestId: requestId() }, { status: 200 });
+}
+
 export function noContent(): NextResponse {
   return new NextResponse(null, { status: 204 });
 }
