@@ -15,7 +15,11 @@ services:
       POSTGRES_PASSWORD: sightline_local_dev
       POSTGRES_DB: sightline
     ports:
-      - '5433:5432'
+      # Bound to loopback deliberately. Docker's short form ('5433:5432')
+      # publishes on every interface, so the database would accept connections
+      # from anyone on the same network -- using the password a few lines above,
+      # which is in a public repository. Local development does not need that.
+      - '127.0.0.1:5433:5432'
     volumes:
       - sightline-pgdata:/var/lib/postgresql/data
       - ./scripts/db-init:/docker-entrypoint-initdb.d:ro

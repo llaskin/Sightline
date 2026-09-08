@@ -51,7 +51,7 @@ data volume. `docker compose down -v` also destroys the data.
 |---|---|
 | 3100 | `npm run dev` / `npm run start` |
 | 3110 | Playwright's production server during `npm run test:e2e` |
-| 5433 | PostgreSQL: `sightline` (development), `sightline_test` (integration), `sightline_e2e` (browser) |
+| 5433 | PostgreSQL: `sightline` (development), `sightline_test` (integration), `sightline_e2e` (browser). Bound to `127.0.0.1` only, so the database is not reachable from your network. |
 
 ## Environment variables
 
